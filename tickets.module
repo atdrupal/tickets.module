@@ -1,0 +1,129 @@
+<?php
+
+/**
+ * Implements hook_entity_info()
+ */
+function tickets_entity_info() {
+  $entity = array();
+  $entity['tickets'] = array(
+      'label' => t('Ticket'),
+      'controller class' => 'VcTicketController',
+      'base table' => 'tickets',
+      'fieldable' => TRUE,
+      'uuid' => TRUE,
+      'entity keys' => array(
+        'id' => 'fpid',
+        'bundle' => 'bundle',
+        'label' => 'admin_title',
+        'uuid' => 'uuid',
+      ),
+      'bundles' => array(
+        // @todo We need to store the possible bundles and create a UI.
+        // to allow for more bundles. For now, hook_panels_panes_entity_info_alter
+        // will work.
+        'tickets' => array(
+          'label' => t('Ticket'),
+          'admin' => array(
+            'path' => 'admin/structure/vc-ticket/manage/%tickets_type',
+            'bundle argument' => 4,
+            'real path' => 'admin/structure/vc-ticket/manage/vc-ticket',
+            'access arguments' => array('administer ticket'),
+          ),
+        ),
+      ),
+      'view modes' => array(
+        // @todo we should support view modes.
+        'full' => array(
+          'label'  => t('Full'),
+          'custom settings' => FALSE,
+        ),
+      ),
+
+      // entity module callbacks
+      'view callback' => 'entity_metadata_view_single',
+      'creation callback' => 'tickets_create',
+      'access callback' => 'tickets_access',
+      'save callback' => 'tickets_save',
+    );
+  
+  return $entity;
+}
+
+
+
+/**
+ * Fetch a ticket object. Make sure that the wildcard you choose 
+ * in the ticket entity definition fits the function name here.
+ *
+ * @param $tickets_id
+ *   Integer specifying the ticket id.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   A fully-loaded $ticket object or FALSE if it cannot be loaded.
+ *
+ * @see tickets_load_multiple()
+ */
+function tickets_load($tickets_id, $reset = FALSE) {
+  $tickets = tickets_load_multiple(array($tickets_id), array(), $reset);
+  return reset($tickets);
+}
+
+
+/**
+ * Load multiple tickets based on certain conditions.
+ *
+ * @param $tickets_ids
+ *   An array of ticket IDs.
+ * @param $conditions
+ *   An array of conditions to match against the {ticket} table.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   An array of ticket objects, indexed by tickets_id.
+ *
+ * @see entity_load()
+ * @see tickets_load()
+ */
+function tickets_load_multiple($tickets_ids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('tickets', $tickets_ids, $conditions, $reset);
+}
+
+
+/**
+ * Deletes a ticket.
+ */
+function tickets_delete(Model $ticket) {
+  $ticket->delete();
+}
+
+
+/**
+ * Delete multiple tickets.
+ *
+ * @param $tickets_ids
+ *   An array of ticket IDs.
+ */
+function tickets_delete_multiple(array $tickets_ids) {
+  entity_get_controller('tickets')->delete($tickets_ids);
+}
+
+
+/**
+ * Create a ticket object.
+ */
+function tickets_create($values = array()) {
+  return entity_get_controller('tickets')->create($values);
+}
+
+
+/**
+ * Saves a ticket to the database.
+ *
+ * @param $ticket
+ *   The ticket object.
+ */
+function tickets_save(Model $ticket) {
+  return $ticket->save();
+}
+

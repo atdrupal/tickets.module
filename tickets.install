@@ -1,0 +1,122 @@
+<?php
+
+/**
+ * Implements hook_install()
+ */
+function tickets_install() {
+  $schema = array();
+  $schema['tickets'] = array(
+    'description' => 'Stores information about support ticket.',
+    'fields' => array(
+      'tid' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'language' => array(
+        'description' => 'The {languages}.language of this ticket.',
+        'type' => 'varchar',
+        'length' => 12,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'title' => array(
+        'description' => 'The title of this ticket, always treated as non-markup plain text.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this ticket; initially, this is the user that created it.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the ticket was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when the ticket was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uuid' => array(
+        'type' => 'char',
+        'length' => 36,
+        'default' => '',
+        'description' => 'The Universally Unique Identifier.',
+      ),
+    ),
+    'indexes' => array(
+      'ticket_changed'        => array('changed'),
+      'ticket_created'        => array('created'),
+      'uid'                 => array('uid'),
+    ),
+    'foreign keys' => array(
+      'ticket_author' => array(
+        'table' => 'users',
+        'columns' => array('uid' => 'uid'),
+      ),
+    ),
+    'primary key' => array('tid'),
+  );
+  
+  //Ticket category
+  $schema['tickets_category'] = array(
+    'description' => 'Stores information about support ticket category.',
+    'fields' => array(
+      'cid' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'name' => array(
+        'description' => 'The name of this ticket category, always treated as non-markup plain text.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this ticket category; initially, this is the user that created it.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the ticket category was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when the ticket category was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'indexes' => array(
+      'ticket_category_changed'        => array('changed'),
+      'ticket_category_created'        => array('created'),
+      'uid'                 => array('uid'),
+    ),
+    'foreign keys' => array(
+      'ticket_category_author' => array(
+        'table' => 'users',
+        'columns' => array('uid' => 'uid'),
+      ),
+    ),
+    'primary key' => array('tid'),
+  );
+  
+  //Ticket comment
+  
+  
+ 
+}
