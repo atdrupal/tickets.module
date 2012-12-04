@@ -1,0 +1,8 @@
+name = Ticket
+description = A simple helpdesk and support ticketing system.
+core = 7.x
+package = "Viet Coop"
+version = 1.0
+dependencies[] = comment
+dependencies[] = file
+dependencies[] = entity
