@@ -4,131 +4,119 @@
  * Implements hook_install()
  */
 function vc_ticket_install() {
+  $schema = array();
   $schema['vc_ticket'] = array(
     'description' => 'Stores information about support ticket.',
     'fields' => array(
-      'tkid' => array(
+      'tid' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'language' => array(
+        'description' => 'The {languages}.language of this ticket.',
+        'type' => 'varchar',
+        'length' => 12,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'title' => array(
+        'description' => 'The title of this ticket, always treated as non-markup plain text.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this ticket; initially, this is the user that created it.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the ticket was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when the ticket was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uuid' => array(
+        'type' => 'char',
+        'length' => 36,
+        'default' => '',
+        'description' => 'The Universally Unique Identifier.',
+      ),
+    ),
+    'indexes' => array(
+      'ticket_changed'        => array('changed'),
+      'ticket_created'        => array('created'),
+      'uid'                 => array('uid'),
+    ),
+    'foreign keys' => array(
+      'ticket_author' => array(
+        'table' => 'users',
+        'columns' => array('uid' => 'uid'),
+      ),
+    ),
+    'primary key' => array('tid'),
+  );
+  
+  //Ticket category
+  $schema['vc_ticket_category'] = array(
+    'description' => 'Stores information about support ticket category.',
+    'fields' => array(
+      'cid' => array(
         'type' => 'serial',
         'not null' => TRUE,
         'unsigned' => TRUE,
       ),
       'name' => array(
-        'type' => 'varchar',
-        'length' => 128,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'path' => array(
-        'type' => 'varchar',
-        'length' => 32,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'status' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'parent' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'integrate_email' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'server_name' => array(
-        'type' => 'varchar',
-        'length' => 64,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'server_username' => array(
-        'type' => 'varchar',
-        'length' => 64,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'server_password' => array(
-        'type' => 'varchar',
-        'length' => 64,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'mailfrom' => array(
-        'type' => 'varchar',
-        'length' => 64,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'mailbox' => array(
-        'type' => 'varchar',
-        'length' => 64,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'protocol' => array(
-        'type' => 'int',
-        'size' => 'small',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-        'default' => 0,
-      ),
-      'extra' => array(
-        'type' => 'varchar',
-        'length' => 128,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'port' => array(
-        'type' => 'int',
-        'size' => 'small',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-        'default' => 0,
-      ),
-      'autoassign' => array(
+        'description' => 'The name of this ticket category, always treated as non-markup plain text.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
         'default' => '',
-        'description' => 'Optionally assign new tickets to this user.',
       ),
-      'autosubscribe' => array(
-        'type' => 'text',
-      ),
-      'domains' => array(
-        'type' => 'text',
-        'size' => 'big',
-      ),
-      'notes' => array(
-        'type' => 'text',
-        'size' => 'big',
-      ),
-      'thread_subject' => array(
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this ticket category; initially, this is the user that created it.',
         'type' => 'int',
-        'size' => 'tiny',
         'not null' => TRUE,
         'default' => 0,
-        'description' => 'Optionally configure per-client subject threading settings.',
       ),
-      'user_creation' => array(
+      'created' => array(
+        'description' => 'The Unix timestamp when the ticket category was created.',
         'type' => 'int',
-        'size' => 'tiny',
         'not null' => TRUE,
         'default' => 0,
-        'description' => 'Optionally configure per-client user creation settings.',
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when the ticket category was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
       ),
     ),
-    'primary key' => array('clid'),
     'indexes' => array(
-      'status' => array('status'),
-      'autoassign' => array('autoassign'),
+      'ticket_category_changed'        => array('changed'),
+      'ticket_category_created'        => array('created'),
+      'uid'                 => array('uid'),
     ),
-    'unique keys' => array('name' => array('name')),
+    'foreign keys' => array(
+      'ticket_category_author' => array(
+        'table' => 'users',
+        'columns' => array('uid' => 'uid'),
+      ),
+    ),
+    'primary key' => array('tid'),
   );
+  
+  //Ticket comment
+  
+  
+ 
 }
