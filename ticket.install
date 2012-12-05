@@ -90,6 +90,28 @@ function ticket_schema() {
         'size' => 'tiny',
         'description' => 'The weight of this ticket type in relation to others.',
       ),
+//      'has_title' => array(
+//        'description' => 'Boolean indicating whether this type uses the {node}.title field.',
+//        'type' => 'int',
+//        'unsigned' => TRUE,
+//        'not null' => TRUE,
+//        'size' => 'tiny',
+//      ),
+//      'title_label' => array(
+//        'description' => 'The label displayed for the title field on the edit form.',
+//        'type' => 'varchar',
+//        'length' => 255,
+//        'not null' => TRUE,
+//        'default' => '',
+//        'translatable' => TRUE,
+//      ),
+//      'locked' => array(
+//        'description' => 'A boolean indicating whether the administrator can change the machine name of this type.',
+//        'type' => 'int',
+//        'not null' => TRUE,
+//        'default' => 0,
+//        'size' => 'tiny',
+//      ),
     ) + entity_exportable_schema_fields(),
     'primary key' => array('id'),
     'unique keys' => array(

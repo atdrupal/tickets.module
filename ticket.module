@@ -79,8 +79,8 @@ function ticket_entity_info() {
  */
 function ticket_field_extra_fields() {
   $extra = array();
-
   foreach (ticket_get_types() as $type => $info) {
+    //kpr(ticket_get_types());exit;
     $extra['ticket'][$type] = array(
       'form' => array(
         'title' => array(
