@@ -107,3 +107,14 @@ function ticket_schema() {
 
   return $schema;
 }
+
+
+/**
+ * Implements hook_intall()
+ */
+function ticket_install() {
+  //Create two taxonomies 
+  module_load_include('module', 'ticket', 'taxomomy.default.inc');
+  ticket_vocabulary_add();
+  ticket_taxonomy_term_add();
+}
