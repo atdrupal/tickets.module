@@ -49,7 +49,7 @@ function ticket_entity_info() {
   );
   // The entity that holds information about the entity types	  
   $return['ticket_type'] = array(
-    'label' => t('Ticket Type'),
+    'label' => t('Ticket type'),
     'entity class' => 'TicketType',
     'controller class' => 'TicketTypeController',
     'base table' => 'ticket_type',
@@ -84,7 +84,7 @@ function ticket_field_extra_fields() {
     $extra['ticket'][$type] = array(
       'form' => array(
         'title' => array(
-          'label' => $info->label,
+          'label' => $info->title_label,
           'description' => t('Ticket module element'),
           'weight' => -5,
         ),
@@ -364,12 +364,6 @@ function ticket_theme() {
       'render element' => 'elements',
       'template' => 'ticket',
     ),
-   'ticket_sample_data' => array(
-      'variables' => array('ticket_sample_data', 'ticket' => NULL),
-      'template' => 'ticket-sample-data',
-    ),
-
-
   );
 }  
 
@@ -455,7 +449,6 @@ class TicketController extends EntityAPIController {
       'title' => '',
       'created' => '',
       'changed' => '',
-      'data' => '',
     );
     
     $ticket = parent::create($values);
@@ -467,10 +460,6 @@ class TicketController extends EntityAPIController {
    */
   public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = array()) {
     $content = parent::buildContent($entity, $view_mode, $langcode, $content);
-    $content['ticket_sample_data'] =  array(
-      '#markup' => theme('ticket_sample_data', array('ticket_sample_data' => check_plain($entity->data['sample_data']), 'ticket' => $entity)),
-    );
-
     return $content;
   }
   
@@ -501,7 +490,6 @@ class TicketTypeController extends EntityAPIControllerExportable {
     $values += array( 
       'id' => '',
       'is_new' => TRUE,
-      'data' => '',
     );
     $ticket_type = parent::create($values);
     return $ticket_type;

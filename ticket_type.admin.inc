@@ -51,6 +51,14 @@ function ticket_type_form($form, &$form_state, $ticket_type, $op = 'edit') {
     ),
     '#description' => t('A unique machine-readable name for this ticket type. It must only contain lowercase letters, numbers, and underscores.'),
   );
+  
+  $form['title_label'] = array(
+    '#title' => t('Title field label'),
+    '#type' => 'textfield',
+    '#default_value' => $ticket_type->title_label,
+    '#required' => TRUE,
+    '#size' => 30,
+  );
 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(

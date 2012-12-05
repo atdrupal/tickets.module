@@ -167,10 +167,11 @@ function ticket_delete_form_wrapper($ticket) {
  */
 function ticket_edit_form($form, &$form_state, $ticket) {
   // Add the default field elements.
-  dsm($ticket);
+  
+  $type = ticket_get_types($ticket->type);
   $form['title'] = array(
     '#type' => 'textfield',
-    '#title' => t('Ticket Name'),
+    '#title' => t($type->title_label),
     '#default_value' => isset($ticket->title) ? $ticket->title : '',
     '#maxlength' => 255,
     '#required' => TRUE,
