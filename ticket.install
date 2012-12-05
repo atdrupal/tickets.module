@@ -1,0 +1,101 @@
+<?php
+
+/**
+ * @file
+ * Sets up the base table for our entity and a table to store information about
+ * the entity types.
+ */
+
+
+/**
+ * Implements hook_schema().
+ */
+function ticket_schema() {
+  $schema = array();
+
+  $schema['ticket'] = array(
+    'description' => 'The base table for ticket entities.',
+    'fields' => array(
+      'ticket_id' => array(
+        'description' => 'Primary Key: Identifier for a ticket.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'description' => 'The {ticket_type}.type of this ticket.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'language' => array(
+        'description' => 'The language of the ticket.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'title' => array(
+        'description' => 'The name of the ticket - a human-readable identifier.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the ticket was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when the ticket was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('ticket_id'),
+    'indexes' => array(
+      'type' => array('type'),
+    ),
+  );
+
+  $schema['ticket_type'] = array(
+    'description' => 'Stores information about defined ticket types.',
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique ticket type identifier.',
+      ),
+      'type' => array(
+        'description' => 'The machine-readable name of this ticket type.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'label' => array(
+        'description' => 'The human-readable name of this ticket type.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'weight' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'size' => 'tiny',
+        'description' => 'The weight of this ticket type in relation to others.',
+      ),
+    ) + entity_exportable_schema_fields(),
+    'primary key' => array('id'),
+    'unique keys' => array(
+      'type' => array('type'),
+    ),
+  );
+
+  return $schema;
+}

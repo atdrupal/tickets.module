@@ -1,0 +1,21 @@
+name = Ticket
+description = Provides entity functionality as ticket system
+core = 7.x
+
+dependencies[] = entity
+dependencies[] = views
+
+files[] = ticket.admin.inc
+files[] = ticket_type.admin.inc
+;files[] = views/ticket.views.inc
+;files[] = views/ticket_handler_link_field.inc
+;files[] = views/ticket_handler_delete_link_field.inc
+;files[] = views/ticket_handler_edit_link_field.inc
+;files[] = views/ticket_handler_ticket_operations_field.inc
+
+; Information added by drupal.org packaging script on 2011-07-03
+version = "7.x-1.0-alpha2"
+core = "7.x"
+project = "ticket"
+datestamp = "1309730820"
+
