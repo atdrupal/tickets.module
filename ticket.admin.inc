@@ -22,7 +22,7 @@ class TicketUIController extends EntityDefaultUIController {
     
     $items = array();
     $id_count = count(explode('/', $this->path));
-    $wildcard = isset($this->entityInfo['admin ui']['menu wildcard']) ? $this->entityInfo['admin ui']['menu wildcard'] : '%' . $this->entityType;
+    //$wildcard = isset($this->entityInfo['admin ui']['menu wildcard']) ? $this->entityInfo['admin ui']['menu wildcard'] : '%' . $this->entityType;
 
     $items[$this->path] = array(
       'title' => 'Tickets',
@@ -51,17 +51,17 @@ class TicketUIController extends EntityDefaultUIController {
     );
     
     // Add menu items to add each different type of entity.
-    foreach (ticket_get_types() as $type) {
-      $items[$this->path . '/add/' . $type->type] = array(
-        'title' => 'Add ' . $type->label,
-        'page callback' => 'ticket_form_wrapper',
-        'page arguments' => array(ticket_create(array('type' => $type->type))),
-        'access callback' => 'ticket_access',
-        'access arguments' => array('edit', 'edit ' . $type->type),
-        'file' => 'ticket.admin.inc',
-        'file path' => drupal_get_path('module', $this->entityInfo['module'])
-      );
-    }
+//    foreach (ticket_get_types() as $type) {
+//      $items[$this->path . '/add/' . $type->type] = array(
+//        'title' => 'Add ' . $type->label,
+//        'page callback' => 'ticket_form_wrapper',
+//        'page arguments' => array(ticket_create(array('type' => $type->type))),
+//        'access callback' => 'ticket_access',
+//        'access arguments' => array('edit', 'edit ' . $type->type),
+//        'file' => 'ticket.admin.inc',
+//        'file path' => drupal_get_path('module', $this->entityInfo['module'])
+//      );
+//    }
 
     // Loading and editing ticket entities
     $items[$this->path . '/ticket/' . $wildcard] = array(

@@ -18,27 +18,29 @@
 function ticket_entity_info() {
   $return['ticket'] = array(
     'label' => t('Ticket'),
-    // The entity class and controller class extend the classes provided by the
-    // Entity API
-    'entity class' => 'Ticket',
-    'controller class' => 'TicketController',
+    'entity class' => 'Entity',
+    'controller class' => 'EntityAPIController',
     'base table' => 'ticket',
     'fieldable' => TRUE,
     'entity keys' => array(
         'id' => 'ticket_id',
-        'bundle' => 'type',
-    ),
-    // Bundles are defined by the ticket types below
-    'bundles' => array(),
-    // Bundle keys tell the FieldAPI how to extract information from the bundle objects
-    'bundle keys' => array(
-      'bundle' => 'type',
+        'bundle' => 'type'
     ),
     'label callback' => 'entity_class_label',
     'uri callback' => 'entity_class_uri',
     'creation callback' => 'ticket_create',
     'access callback' => 'ticket_access',
     'module' => 'ticket',
+    'bundles' => array(
+        'ticket' => array(
+          'label' => t('Ticket'),
+          'admin' => array(
+            'path' => 'admin/content/tickets',
+            'access arguments' => array('administer ticket'),
+          ),
+        ),
+    ),
+    
     // The information below is used by the TicketUIController (which extends the EntityDefaultUIController)
     'admin ui' => array(
       'path' => 'admin/content/tickets',
@@ -48,28 +50,28 @@ function ticket_entity_info() {
     ),
   );
   // The entity that holds information about the entity types	  
-  $return['ticket_type'] = array(
-    'label' => t('Ticket type'),
-    'entity class' => 'TicketType',
-    'controller class' => 'TicketTypeController',
-    'base table' => 'ticket_type',
-    'fieldable' => FALSE,
-    'bundle of' => 'ticket',
-    'exportable' => TRUE,
-    'entity keys' => array(
-      'id' => 'id',
-      'name' => 'type',
-      'label' => 'label',
-    ),
-    'access callback' => 'ticket_type_access',
-    'module' => 'ticket',
-    // Enable the entity API's admin UI.
-    'admin ui' => array(
-      'path' => 'admin/structure/ticket_types',
-      'file' => 'ticket_type.admin.inc',
-      'controller class' => 'TicketTypeUIController',
-    ),
-  );
+//  $return['ticket_type'] = array(
+//    'label' => t('Ticket type'),
+//    'entity class' => 'TicketType',
+//    'controller class' => 'TicketTypeController',
+//    'base table' => 'ticket_type',
+//    'fieldable' => FALSE,
+//    'bundle of' => 'ticket',
+//    'exportable' => TRUE,
+//    'entity keys' => array(
+//      'id' => 'id',
+//      'name' => 'type',
+//      'label' => 'label',
+//    ),
+//    'access callback' => 'ticket_type_access',
+//    'module' => 'ticket',
+//    // Enable the entity API's admin UI.
+//    'admin ui' => array(
+//      'path' => 'admin/structure/ticket_types',
+//      'file' => 'ticket_type.admin.inc',
+//      'controller class' => 'TicketTypeUIController',
+//    ),
+//  );
 
   return $return;
 }
@@ -78,21 +80,21 @@ function ticket_entity_info() {
  * Implements hook_field_extra_fields().
  */
 function ticket_field_extra_fields() {
-  $extra = array();
-  foreach (ticket_get_types() as $type => $info) {
-    //kpr(ticket_get_types());exit;
-    $extra['ticket'][$type] = array(
-      'form' => array(
-        'title' => array(
-          'label' => $info->title_label,
-          'description' => t('Ticket module element'),
-          'weight' => -5,
-        ),
-      ),
-    );
-  }
-
-  return $extra;
+//  $extra = array();
+//  foreach (ticket_get_types() as $type => $info) {
+//    //kpr(ticket_get_types());exit;
+//    $extra['ticket'][$type] = array(
+//      'form' => array(
+//        'title' => array(
+//          'label' => $info->title_label,
+//          'description' => t('Ticket module element'),
+//          'weight' => -5,
+//        ),
+//      ),
+//    );
+//  }
+//
+//  return $extra;
 }
 
 
@@ -105,17 +107,17 @@ function ticket_field_extra_fields() {
  * @todo This needs to be improved
  */
 function ticket_entity_info_alter(&$entity_info) {
-  foreach (ticket_get_types() as $type => $info) {
-    $entity_info['ticket']['bundles'][$type] = array(
-      'label' => $info->label,
-      'admin' => array(
-        'path' => 'admin/structure/ticket_types/manage/%ticket_type',
-        'real path' => 'admin/structure/ticket_types/manage/' . $type,
-        'bundle argument' => 4,
-        'access arguments' => array('administer ticket types'),
-      ),
-    );
-  }
+//  foreach (ticket_get_types() as $type => $info) {
+//    $entity_info['ticket']['bundles'][$type] = array(
+//      'label' => $info->label,
+//      'admin' => array(
+//        'path' => 'admin/structure/ticket_types/manage/%ticket_type',
+//        'real path' => 'admin/structure/ticket_types/manage/' . $type,
+//        'bundle argument' => 4,
+//        'access arguments' => array('administer ticket types'),
+//      ),
+//    );
+//  }
 }
   
 
@@ -137,17 +139,17 @@ function ticket_permission() {
   );
   
   //Generate permissions per ticket 
-  foreach (ticket_get_types() as $type) {
-    $type_name = check_plain($type->type);
-    $permissions += array(
-      "edit any $type_name ticket" => array(
-        'title' => t('%type_name: Edit any ticket', array('%type_name' => $type->label)),
-      ),
-      "view any $type_name ticket" => array(
-        'title' => t('%type_name: View any ticket', array('%type_name' => $type->label)),
-      ),
-    );
-  }
+//  foreach (ticket_get_types() as $type) {
+//    $type_name = check_plain($type->type);
+//    $permissions += array(
+//      "edit any $type_name ticket" => array(
+//        'title' => t('%type_name: Edit any ticket', array('%type_name' => $type->label)),
+//      ),
+//      "view any $type_name ticket" => array(
+//        'title' => t('%type_name: View any ticket', array('%type_name' => $type->label)),
+//      ),
+//    );
+//  }
   return $permissions;  
 }
 
@@ -406,19 +408,19 @@ class Ticket extends Entity {
 }
 
 
-/**
- * The class used for ticket type entities
- */
-class TicketType extends Entity {
-  
-  public $type;
-  public $label;
-  
-  public function __construct($values = array()) {
-    parent::__construct($values, 'ticket_type');
-  }
-  
-}
+///**
+// * The class used for ticket type entities
+// */
+//class TicketType extends Entity {
+//  
+//  public $type;
+//  public $label;
+//  
+//  public function __construct($values = array()) {
+//    parent::__construct($values, 'ticket_type');
+//  }
+//  
+//}
 
 
 /**
@@ -469,30 +471,30 @@ class TicketController extends EntityAPIController {
 /**
  * The Controller for Ticket entities
  */
-class TicketTypeController extends EntityAPIControllerExportable {
-  public function __construct($entityType) {
-    parent::__construct($entityType);
-  }
-  
-   /**
-   * Create a ticket type - we first set up the values that are specific
-   * to our ticket type schema but then also go through the EntityAPIController
-   * function.
-   * 
-   * @param $type
-   *   The machine-readable type of the ticket.
-   *
-   * @return
-   *   A ticket type object with all default fields initialized.
-   */
-  public function create(array $values = array()) {
-    // Add values that are specific to our Ticket
-    $values += array( 
-      'id' => '',
-      'is_new' => TRUE,
-    );
-    $ticket_type = parent::create($values);
-    return $ticket_type;
-  }
-
-}
+//class TicketTypeController extends EntityAPIControllerExportable {
+//  public function __construct($entityType) {
+//    parent::__construct($entityType);
+//  }
+//  
+//   /**
+//   * Create a ticket type - we first set up the values that are specific
+//   * to our ticket type schema but then also go through the EntityAPIController
+//   * function.
+//   * 
+//   * @param $type
+//   *   The machine-readable type of the ticket.
+//   *
+//   * @return
+//   *   A ticket type object with all default fields initialized.
+//   */
+//  public function create(array $values = array()) {
+//    // Add values that are specific to our Ticket
+//    $values += array( 
+//      'id' => '',
+//      'is_new' => TRUE,
+//    );
+//    $ticket_type = parent::create($values);
+//    return $ticket_type;
+//  }
+//
+//}

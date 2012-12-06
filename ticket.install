@@ -6,7 +6,7 @@
  * the entity types.
  */
 
-
+require_once 'includes/ticket.taxomomy.default.inc';
 /**
  * Implements hook_schema().
  */
@@ -114,7 +114,6 @@ function ticket_schema() {
  */
 function ticket_install() {
   //Create two taxonomies 
-  module_load_include('module', 'ticket', 'taxomomy.default.inc');
   ticket_vocabulary_add();
   ticket_taxonomy_term_add();
 }
