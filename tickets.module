@@ -1,0 +1,168 @@
+<?php
+
+
+require_once dirname(__FILE__) . '/lib/Ticket.php';
+require_once dirname(__FILE__) . '/lib/TicketUIController.php';
+require_once dirname(__FILE__) . '/includes/tickets.fields.inc';
+require_once dirname(__FILE__) . '/lib/TicketCategory.php';
+require_once dirname(__FILE__) . '/lib/TicketCategoryUIController.php';
+
+/**
+ * Implements hook_entity_info().
+ */
+function tickets_entity_info() {
+  $info['ticket'] = array(
+    'label' => 'Ticket',
+    'module' => 'tickets',
+    'base table' => 'ticket',
+    'fieldable' => TRUE,
+    'access callback' => 'ticket_access_callback',
+    'label callback' => 'ticket_label_callback',
+    'controller class' => 'EntityAPIController', // 'Lgentity_Entity_MachineController',
+    'entity class' => 'TicketEntity',
+    'metadata controller class' => 'EntityDefaultMetadataController',
+    'entity keys' => array('id' => 'ticket_id', 'bundle' => 'type'),
+    'bundle keys' => array('bundle' => 'type'),
+    'bundles' => array(
+      'ticket' => array(
+        'label' => 'Ticket',
+        'admin' => array(
+          'path' => 'admin/structure/tickets',
+          'access arguments' => array('administer tickets'),
+        ),
+      ),
+    ),
+    'admin ui' => array(
+      'path' => 'admin/structure/tickets',
+      'file' => 'includes/tickets.admin.inc',
+      'controller class' => 'EntityTicketUIController',
+    ),
+  );
+  $info['ticket_category'] = array(
+    'label' => 'Ticket category',
+    'module' => 'tickets',
+    'base table' => 'ticket_category',
+    'fieldable' => TRUE,
+    'access callback' => 'ticket_category_access_callback',
+    'label callback' => 'ticket_category_label_callback',
+    'controller class' => 'EntityAPIController', // 'Lgentity_Entity_MachineController',
+    'entity class' => 'TicketCategoryEntity',
+    'metadata controller class' => 'EntityDefaultMetadataController',
+    'entity keys' => array('id' => 'ticket_cid', 'bundle' => 'type'),
+    'bundle keys' => array('bundle' => 'type'),
+    'bundles' => array(
+      'ticket_category' => array(
+        'label' => 'Ticket Category',
+        'admin' => array(
+          'path' => 'admin/structure/ticket-categorys',
+          'access arguments' => array('administer ticket category'),
+        ),
+      ),
+    ),
+    'admin ui' => array(
+      'path' => 'admin/structure/ticket-categorys',
+      'file' => 'includes/tickets_category.admin.inc',
+      'controller class' => 'TicketCategoryEntityUIController',
+    ),
+  );
+  
+  return $info;
+}
+
+function tickets_entity_property_info() {
+  $info = array();
+  $properties = &$info['ticket']['properties'];
+
+  $properties['title'] = array(
+    'label' => t("Content ID"), 
+    'type' => 'nvarchar', 
+    'description' => t("The unique content ID."),
+  );
+  return $info;
+}
+
+/**
+ * Access callback for machine entity.
+ */
+function ticket_access_callback($op, $entity, $account, $entity_type) {
+  return user_access('administer tickets');
+}
+
+/**
+ * Label callback for machine entity.
+ */
+function ticket_label_callback($entity, $entity_type) {
+  return ucwords($entity->type) . " #{$entity->ticket_id}";
+}
+
+
+/**
+ * Access callback for machine entity.
+ */
+function ticket_category_access_callback($op, $entity, $account, $entity_type) {
+  return user_access('administer ticket category');
+}
+
+/**
+ * Label callback for machine entity.
+ */
+function ticket_category_label_callback($entity, $entity_type) {
+  return ucwords($entity->type) . " #{$entity->ticket_id}";
+}
+
+
+function tickets_permission() {
+  return array(
+    'administer tickets' => array(
+      'title' => t('Administer tickets'), 
+      'description' => t('Perform administration tasks for tickets.'),
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_fied_extra_fields().
+ */
+function tickets_field_extra_fields() {
+  $extra = array();
+  $entity_info = entity_get_info('ticket');
+  if (!empty($entity_info)) {
+    foreach ($entity_info['bundles'] as $bundle => $info) {
+      $extra['ticket'][$bundle] = array(
+        'form' => array(
+          'title' => array(
+            'label' => t('Title'),
+            'description' => t('The displayed title of the entity.'),
+            'weight' => -5,
+          ),
+        ),
+        'display' => array(
+          'title' => array(
+            'label' => t('Title'),
+            'description' => t('The displayed title of the entity.'),
+            'weight' => -5,
+          ),
+        ),
+      );
+      if ($bundle == 'ticket') {
+        tickets_add_body_field('ticket');
+        tickets_add_file_field('ticket');
+      }
+    }
+  }
+  $entity_info = entity_get_info('ticket_category');
+  if (!empty($entity_info)) {
+    foreach ($entity_info['bundles'] as $bundle => $info) {
+      if ($bundle == 'ticket_category') {
+        tickets_category_add_term_reference('ticket_category');
+      }
+    }
+  }
+  return $extra;
+}
+
+
+function tickets_form_alter($form, $form_state, $form_id) {
+//  dsm($form_id);
+}

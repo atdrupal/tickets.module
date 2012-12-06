@@ -1,0 +1,127 @@
+<?php
+
+/**
+ * @file
+ * Sets up the base table for our entity and a table to store information about
+ * the entity types.
+ */
+
+require_once 'includes/tickets.taxomomy.default.inc';
+/**
+ * Implements hook_schema().
+ */
+function tickets_schema() {
+  $schema = array();
+
+  $schema['ticket'] = array(
+    'description' => 'The base table for ticket entities.',
+    'fields' => array(
+      'ticket_id' => array(
+        'description' => 'Primary Key: Identifier for a ticket.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'description' => 'The {ticket_type}.type of this ticket.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'title' => array(
+        'description' => 'The name of the ticket - a human-readable identifier.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the ticket was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when the ticket was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this machine; initially, this is the user that created it.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('ticket_id'),
+    'indexes' => array(
+      'bundle' => array('type'),
+      'users' => array('uid'),
+      'created' => array('created'),
+      'changed' => array('changed'),
+    ),
+  );
+  $schema['ticket_category'] = array(
+    'description' => 'The base table for ticket category entity.',
+    'fields' => array(
+      'ticket_cid' => array(
+        'description' => 'Primary Key: Identifier for a ticket.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'description' => 'The {ticket_type}.type of this ticket.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'name' => array(
+        'description' => 'The name tiket category.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the ticket was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when the ticket was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this machine; initially, this is the user that created it.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('ticket_cid'),
+    'indexes' => array(
+      'bundle' => array('type'),
+      'users' => array('uid'),
+      'created' => array('created'),
+      'changed' => array('changed'),
+    ),
+  );
+  return $schema;
+}
+
+
+/**
+ * Implements hook_intall()
+ */
+function tickets_install() {
+  //Create two taxonomies 
+  tickets_vocabulary_add();
+  tickets_taxonomy_term_add();
+}
