@@ -6,6 +6,8 @@ require_once dirname(__FILE__) . '/lib/TicketUIController.php';
 require_once dirname(__FILE__) . '/includes/tickets.fields.inc';
 require_once dirname(__FILE__) . '/lib/TicketCategory.php';
 require_once dirname(__FILE__) . '/lib/TicketCategoryUIController.php';
+require_once dirname(__FILE__) . '/lib/TicketCategoryInlineEntityForm.php';
+require_once dirname(__FILE__) . '/includes/tickets.inc';
 
 /**
  * Implements hook_entity_info().
@@ -16,6 +18,7 @@ function tickets_entity_info() {
     'module' => 'tickets',
     'base table' => 'ticket',
     'fieldable' => TRUE,
+    'uri callback' => 'entity_class_uri',
     'access callback' => 'ticket_access_callback',
     'label callback' => 'ticket_label_callback',
     'controller class' => 'EntityAPIController', // 'Lgentity_Entity_MachineController',
@@ -36,6 +39,16 @@ function tickets_entity_info() {
       'path' => 'admin/structure/tickets',
       'file' => 'includes/tickets.admin.inc',
       'controller class' => 'EntityTicketUIController',
+    ),
+    'view modes' => array(
+      'full' => array(
+        'label' => t('Full content'),
+        'custom settings' => FALSE,
+      ),
+      'teaser' => array(
+        'label' => t('Teaser'),
+        'custom settings' => FALSE,
+      ),
     ),
   );
   $info['ticket_category'] = array(
@@ -69,17 +82,6 @@ function tickets_entity_info() {
   return $info;
 }
 
-function tickets_entity_property_info() {
-  $info = array();
-  $properties = &$info['ticket']['properties'];
-
-  $properties['title'] = array(
-    'label' => t("Content ID"), 
-    'type' => 'nvarchar', 
-    'description' => t("The unique content ID."),
-  );
-  return $info;
-}
 
 /**
  * Access callback for machine entity.
@@ -110,7 +112,9 @@ function ticket_category_label_callback($entity, $entity_type) {
   return ucwords($entity->type) . " #{$entity->ticket_id}";
 }
 
-
+/**
+ * Implements hook_permission
+ */
 function tickets_permission() {
   return array(
     'administer tickets' => array(
@@ -126,9 +130,11 @@ function tickets_permission() {
  */
 function tickets_field_extra_fields() {
   $extra = array();
-  $entity_info = entity_get_info('ticket');
-  if (!empty($entity_info)) {
-    foreach ($entity_info['bundles'] as $bundle => $info) {
+  $entity_info = entity_get_info();
+  if (empty($entity_info)) return;
+  
+  if (isset($entity_info['ticket'])) {
+    foreach ($entity_info['ticket']['bundles'] as $bundle => $info) {
       $extra['ticket'][$bundle] = array(
         'form' => array(
           'title' => array(
@@ -151,15 +157,65 @@ function tickets_field_extra_fields() {
       }
     }
   }
-  $entity_info = entity_get_info('ticket_category');
-  if (!empty($entity_info)) {
-    foreach ($entity_info['bundles'] as $bundle => $info) {
+  if (isset($entity_info['ticket_category'])) {
+    foreach ($entity_info['ticket_category']['bundles'] as $bundle => $info) {
+      $extra['ticket_category'][$bundle] = array(
+        'form' => array(
+          'name' => array(
+            'label' => t('Name'),
+            'description' => t('The displayed name of the entity.'),
+            'weight' => -5,
+          ),
+        ),
+        'display' => array(
+          'title' => array(
+            'label' => t('Name'),
+            'description' => t('The displayed title of the entity.'),
+            'weight' => -5,
+          ),
+        ),
+      );
       if ($bundle == 'ticket_category') {
         tickets_category_add_term_reference('ticket_category');
       }
     }
   }
   return $extra;
+}
+
+
+
+/**
+ * Sets up content to show an individual model
+ * @todo - get rid of drupal_set_title();
+ */
+function tickets_page_view($ticket, $view_mode = 'full') {   
+//  $ticket = ticket_load($ticket);
+//  kpr($ticket);exit;
+  $controller = entity_get_controller('ticket');  
+  $content = $controller->view(array($ticket->ticket_id => $ticket));
+  drupal_set_title($ticket->title);
+  return $content;
+}
+
+
+/**
+ * Menu title callback for showing individual entities
+ */
+function tickets_page_title(TicketEntity $ticket){
+  return $ticket->name;
+}
+
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function tickets_entity_info_alter(&$entity_info) {
+  if (isset($entity_info['ticket_category'])) {
+    $entity_info['ticket_category']['inline entity form'] = array(
+      'controller' => 'TicketCategoryInlineEntityFormController',
+    );
+  }
 }
 
 

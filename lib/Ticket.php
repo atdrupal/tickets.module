@@ -14,4 +14,7 @@ class TicketEntity extends Entity {
     if (!$this->changed) $this->changed = REQUEST_TIME;
     if (!$this->uid) $this->uid = user_is_anonymous() ? 0 : $GLOBALS['user']->uid;
   }
+  protected function defaultUri() {
+      return array('path' => 'ticket/' . $this->ticket_id);
+  }
 }

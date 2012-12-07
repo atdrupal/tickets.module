@@ -13,5 +13,15 @@ files[] = tickets.admin.inc
 ;files[] = views/ticket_handler_edit_link_field.inc
 ;files[] = views/ticket_handler_ticket_operations_field.inc
 files[] = includes/tickets.fields.inc
+files[] = includes/tickets.inc
+
+
+files [] = lib/Ticket.php
+files [] = lib/TicketCategory.php
+files [] = lib/TicketCategoryEntityMetaController.php
+files [] = lib/TicketCategoryInlineEntityForm.php
+files [] = lib/TicketCategoryUIController.php
+files [] = lib/TicketEntityMetaController.php
+files [] = lib/TicketUIController.php
 
 
