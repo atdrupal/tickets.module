@@ -3,6 +3,7 @@
 
 require_once dirname(__FILE__) . '/lib/Ticket.php';
 require_once dirname(__FILE__) . '/lib/TicketUIController.php';
+require_once dirname(__FILE__) . '/lib/TicketEntityMetaController.php';
 require_once dirname(__FILE__) . '/includes/tickets.fields.inc';
 require_once dirname(__FILE__) . '/lib/TicketCategory.php';
 require_once dirname(__FILE__) . '/lib/TicketCategoryUIController.php';
@@ -23,7 +24,7 @@ function tickets_entity_info() {
     'label callback' => 'ticket_label_callback',
     'controller class' => 'EntityAPIController', // 'Lgentity_Entity_MachineController',
     'entity class' => 'TicketEntity',
-    'metadata controller class' => 'EntityDefaultMetadataController',
+    'metadata controller class' => 'TicketEntityMetaController',
     'entity keys' => array('id' => 'ticket_id', 'bundle' => 'type'),
     'bundle keys' => array('bundle' => 'type'),
     'bundles' => array(
@@ -182,8 +183,6 @@ function tickets_field_extra_fields() {
   }
   return $extra;
 }
-
-
 
 /**
  * Sets up content to show an individual model
