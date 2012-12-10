@@ -38,6 +38,8 @@ function ticket_comments_load($ticket_comments_id, $reset = FALSE) {
  * @see ticket_comments_load()
  */
 function ticket_comments_load_multiple($ticket_comments_ids = array(), $conditions = array(), $reset = FALSE) {
+//  kpr($conditions);
+//  kpr($ticket_comments_ids);
   return entity_load('ticket_comments', $ticket_comments_ids, $conditions, $reset);
 }
 

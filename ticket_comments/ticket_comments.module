@@ -4,6 +4,7 @@ require_once dirname(__FILE__) . '/controller/TicketCommentEntityMetaController.
 require_once dirname(__FILE__) . '/controller/TicketComment.php';
 require_once dirname(__FILE__) . '/controller/TicketCommentUIController.php';
 require_once dirname(__FILE__) . '/ticket_comments.admin.inc';
+require_once dirname(__FILE__) . '/ticket_comments.inc';
 
 /**
  * Implements hook_entity_info().
@@ -12,16 +13,16 @@ function ticket_comments_entity_info() {
   
   $info['ticket_comments'] = array(
     'label' => 'Ticket comment',
-    'module' => 'tickets',
+    'module' => 'ticket_comments',
     'base table' => 'ticket_comments',
     'fieldable' => TRUE,
     'uri callback' => 'entity_class_uri',
     'access callback' => 'ticket_comments_access_callback',
     'label callback' => 'ticket_comments_label_callback',
     'controller class' => 'EntityAPIController', // 'Lgentity_Entity_MachineController',
-    'entity class' => 'TicketCommentEntity',
-    'metadata controller class' => 'EntityDefaultMetadataController',
-    'entity keys' => array('id' => 'ticket_cid', 'bundle' => 'type'),
+    'entity class' => 'TicketComment',
+    'metadata controller class' => 'TicketCommentEntityMetaController',
+    'entity keys' => array('id' => 'comment_id', 'bundle' => 'type'),
     'bundle keys' => array('bundle' => 'type'),
     'bundles' => array(
       'ticket_comments' => array(
@@ -34,14 +35,13 @@ function ticket_comments_entity_info() {
     ),
     'admin ui' => array(
       'path' => 'admin/structure/ticket-comments',
-      'file' => 'includes/tickets_category.admin.inc',
+      'file' => 'ticket_comments.admin.inc',
       'controller class' => 'EntityDefaultUIController',
     ),
   );
   
   return $info;
 }
-
 
 
 /**
@@ -72,6 +72,10 @@ function ticket_comments_theme() {
       'template' => 'ticket-comments-wrapper',
       'render element' => 'content',
     ),
+    'ticket_comments' => array(
+      'variables' => array('elements' => null),
+      'template' => 'ticket_comments',
+    ),
   );
 }
 
@@ -82,18 +86,16 @@ function ticket_comments_theme() {
  *  A ticket object.
  */
 function ticket_comments_page_additions($ticket) {
-  module_load_include('inc', 'ticket_comments', 'ticket_comments');
+  //Get comment form
   $ticket_comment = ticket_comments_create(array('type' => 'ticket_comments'));
-//  kpr($ticket_comments);exit;
   $build = drupal_get_form('ticket_comments_form', $ticket_comment, 'add', 'ticket_comments', $ticket);
   $additions['comment_form'] = $build;
   
-//  $ticket_comments = ticket_comments_load_multiple(array(), array('ticket_id' => 1));
-  $ticket_comments = entity_load('ticket_comments' , FALSE , array('ticket_id' => 1), FALSE);
-  kpr($ticket_comments);
-  kpr($ticket->ticket_id);exit;
-  $additions['comments_ticket'] = $ticket_comments;
-  
+  //Get comments on ticket
+  $ticket_comments = ticket_comments_load_multiple(FALSE, array('ticket_id' => 1));
+  $build = ticket_comments_view_multiple($ticket_comments, $ticket);
+  $build['pager']['#theme'] = 'pager';
+  $additions['comments'] = $build;
   
   
   if ($additions) {
@@ -106,6 +108,52 @@ function ticket_comments_page_additions($ticket) {
   }
   return $additions;
 }
+
+function ticket_comments_view($ticket_comment, $ticket, $view_mode = 'full', $langcode = NULL) {   
+  if (!isset($langcode)) {
+    $langcode = $GLOBALS['language_content']->language;
+  }
+  
+  $ticket_comment->content = array();
+  
+  
+  field_attach_prepare_view('ticket_comments', array($ticket_comment->comment_id => $ticket_comment), $view_mode, $langcode);
+  entity_prepare_view('ticket_comments', array($ticket_comment->comment_id => $ticket_comment), $langcode);
+  $ticket_comment->content += field_attach_view('ticket_comments', $ticket_comment, $view_mode, $langcode);
+  
+  // Allow modules to make their own additions to the comment.
+  module_invoke_all('ticket_comments_view', $ticket_comment, $view_mode, $langcode);
+  module_invoke_all('entity_view', $ticket_comment, 'ticket_comments', $view_mode, $langcode);
+  
+  $build = $ticket_comment->content;
+  // We don't need duplicate rendering info in ticket_comment->content.
+
+  $build += array(
+    '#theme' => 'ticket_comments',
+    '#elements' => $ticket_comment,
+    '#view_mode' => $view_mode,
+    '#language' => $langcode,
+  );
+
+  return $build;
+}
+
+function ticket_comments_view_multiple($ticket_comments, $ticket, $view_mode = 'full', $weight = 0, $langcode = NULL) {
+  field_attach_prepare_view('ticket_comments', $ticket_comments, $view_mode, $langcode);
+  entity_prepare_view('ticket_comments', $ticket_comments, $langcode);
+
+  $build = array(
+    '#sorted' => TRUE,
+  );
+  foreach ($ticket_comments as $ticket_comment) {
+    $build[$ticket_comment->comment_id] = ticket_comments_view($ticket_comment, $ticket, $view_mode, $langcode);
+    $build[$ticket_comment->comment_id]['#weight'] = $weight;
+    $weight++;
+  }
+  return $build;
+}
+
+
 
 //function ticket_comments_form($form, &$form_state, $ticket_comments) {
 //  field_attach_form('ticket_comments', $ticket_comments, $form, $form_state);

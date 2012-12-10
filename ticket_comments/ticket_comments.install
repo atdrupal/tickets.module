@@ -14,7 +14,7 @@ function ticket_comments_schema() {
   $schema['ticket_comments'] = array(
     'description' => 'The base table for ticket comments entity.',
     'fields' => array(
-      'ticket_cid' => array(
+      'comment_id' => array(
         'description' => 'Primary Key: Identifier for a ticket comments.',
         'type' => 'serial',
         'unsigned' => TRUE,
@@ -33,24 +33,24 @@ function ticket_comments_schema() {
         'default' => 0,
         'description' => 'The {ticket}.ticket_id to which this comment is a reply.',
       ),
-      'priority' => array(
-        'description' => 'The importance level reference vacabulary ticket_importance.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'state' => array(
-        'description' => 'The state reference vacabulary ticket_state.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'assigned' => array(
-        'description' => 'The {users}. uid assigned for ticket.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
+//      'priority' => array(
+//        'description' => 'The importance level reference vacabulary ticket_importance.',
+//        'type' => 'int',
+//        'not null' => TRUE,
+//        'default' => 0,
+//      ),
+//      'state' => array(
+//        'description' => 'The state reference vacabulary ticket_state.',
+//        'type' => 'int',
+//        'not null' => TRUE,
+//        'default' => 0,
+//      ),
+//      'assigned' => array(
+//        'description' => 'The {users}. uid assigned for ticket.',
+//        'type' => 'int',
+//        'not null' => TRUE,
+//        'default' => 0,
+//      ),
       'created' => array(
         'description' => 'The Unix timestamp when the ticket was created.',
         'type' => 'int',
@@ -70,7 +70,7 @@ function ticket_comments_schema() {
         'default' => 0,
       ),
     ),
-    'primary key' => array('ticket_cid'),
+    'primary key' => array('comment_id'),
     'indexes' => array(
       'bundle' => array('type'),
       'users' => array('uid'),

@@ -166,11 +166,6 @@ function tickets_field_extra_fields() {
           ),
         ),
       );
-      if ($bundle == 'ticket') {
-//        tickets_add_body_field('ticket');
-//        tickets_add_file_field('ticket');
-//        tickets_add_entity_reference();
-      }
     }
   }
   if (isset($entity_info['ticket_category'])) {
@@ -191,9 +186,6 @@ function tickets_field_extra_fields() {
           ),
         ),
       );
-      if ($bundle == 'ticket_category') {
-//        tickets_category_add_term_reference('ticket_category');
-      }
     }
   }
   return $extra;
