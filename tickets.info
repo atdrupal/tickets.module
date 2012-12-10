@@ -1,7 +1,7 @@
 name = Tickets
 description = Manager system tickets
 core = 7.x
-
+package = "Viet Coop"
 dependencies[] = entity
 dependencies[] = views
 dependencies[] = options
@@ -9,6 +9,7 @@ dependencies[] = inline_entity_form
 dependencies[] = text
 dependencies[] = file
 dependencies[] = entityreference
+dependencies[] = devel
 
 files[] = tickets.admin.inc
 ;files[] = ticket_type.admin.inc

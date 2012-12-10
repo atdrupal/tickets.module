@@ -11,9 +11,9 @@ require_once dirname(__FILE__) . '/lib/TicketCategoryUIController.php';
 require_once dirname(__FILE__) . '/lib/TicketCategoryInlineEntityForm.php';
 
 
-require_once dirname(__FILE__) . '/lib/TicketCommentEntityMetaController.php';
-require_once dirname(__FILE__) . '/lib/TicketComment.php';
-require_once dirname(__FILE__) . '/lib/TicketCommentUIController.php';
+//require_once dirname(__FILE__) . '/lib/TicketCommentEntityMetaController.php';
+//require_once dirname(__FILE__) . '/lib/TicketComment.php';
+//require_once dirname(__FILE__) . '/lib/TicketCommentUIController.php';
 //require_once dirname(__FILE__) . '/lib/TicketCommentInlineEntityForm.php';
 
 
@@ -90,34 +90,6 @@ function tickets_entity_info() {
       'controller class' => 'TicketCategoryEntityUIController',
     ),
   );
-  $info['ticket_comments'] = array(
-    'label' => 'Ticket comment',
-    'module' => 'tickets',
-    'base table' => 'ticket_comments',
-    'fieldable' => TRUE,
-    'uri callback' => 'entity_class_uri',
-    'access callback' => 'ticket_comment_access_callback',
-    'label callback' => 'ticket_comment_label_callback',
-    'controller class' => 'EntityAPIController', // 'Lgentity_Entity_MachineController',
-    'entity class' => 'TicketCommentEntity',
-    'metadata controller class' => 'EntityDefaultMetadataController',
-    'entity keys' => array('id' => 'ticket_cid', 'bundle' => 'type'),
-    'bundle keys' => array('bundle' => 'type'),
-    'bundles' => array(
-      'ticket_comments' => array(
-        'label' => 'Ticket Comments',
-        'admin' => array(
-          'path' => 'admin/structure/ticket-comments',
-          'access arguments' => array('administer ticket comments'),
-        ),
-      ),
-    ),
-    'admin ui' => array(
-      'path' => 'admin/structure/ticket-comments',
-      'file' => 'includes/tickets_category.admin.inc',
-      'controller class' => 'TicketCommentEntityUIController',
-    ),
-  );
   
   return $info;
 }
@@ -153,20 +125,7 @@ function ticket_category_label_callback($entity, $entity_type) {
 //  return ucwords($entity->type) . " #{$entity->ticket_id}";
   return ucwords($entity->name);
 }
-/**
- * Access callback for machine entity.
- */
-function ticket_comment_access_callback($op, $entity, $account, $entity_type) {
-  return user_access('administer ticket comment');
-}
 
-/**
- * Label callback for machine entity.
- */
-function ticket_comment_label_callback($entity, $entity_type) {
-//  return ucwords($entity->type) . " #{$entity->ticket_id}";
-  return ucwords($entity->name);
-}
 
 /**
  * Implements hook_permission
@@ -251,17 +210,21 @@ function tickets_page_view($ticket, $view_mode = 'full', $langcode = NULL) {
   
   $ticket->content = array();
   
+  
   field_attach_prepare_view('ticket', array($ticket->ticket_id => $ticket), $view_mode, $langcode);
   entity_prepare_view('ticket', array($ticket->ticket_id => $ticket), $langcode);
   $ticket->content += field_attach_view('ticket', $ticket, $view_mode, $langcode);
   
-
+  // Allow modules to make their own additions to the comment.
+  module_invoke_all('ticket_view', $ticket, $view_mode, $langcode);
+  module_invoke_all('entity_view', $ticket, 'ticket', $view_mode, $langcode);
+  
   $build = $ticket->content;
   // We don't need duplicate rendering info in ticket->content.
 
   $build += array(
     '#theme' => 'ticket',
-    '#element' => $ticket,
+    '#elements' => $ticket,
     '#view_mode' => $view_mode,
     '#language' => $langcode,
   );
@@ -330,7 +293,7 @@ function tickets_theme() {
  * @see node.tpl.php
  */
 function template_preprocess_ticket(&$variables) {
-//  kpr($variables);exit;
+  kpr($variables);exit;
 //  $variables['view_mode'] = $variables['elements']['#view_mode'];
 //  // Provide a distinct $teaser boolean.
 //  $variables['teaser'] = $variables['view_mode'] == 'teaser';
