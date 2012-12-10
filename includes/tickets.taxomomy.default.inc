@@ -13,7 +13,12 @@ function tickets_vocabulary_add() {
     ),
   );
   foreach ($vocabularies as $vocabulary) {
-    taxonomy_vocabulary_save((object)$vocabulary);
+    $exists = taxonomy_vocabulary_machine_name_load($vocabulary['machine_name']);
+    if(!$exists) {
+      taxonomy_vocabulary_save((object)$vocabulary);
+      watchdog('Status', 'Created vocabulary %name', array('%name' => $vocabulary['name']));
+    }
+    
   }
 }
 
@@ -40,6 +45,7 @@ function tickets_taxonomy_term_add() {
       $term->name = $term_name;
       $term->vid = $vocabulary->vid;
       taxonomy_term_save($term);
+      watchdog('status', 'Add term %term_name to %machine_name', array('%term_name' => $term_name, '%machine_name' => $machine_name));
     }
   }
 }

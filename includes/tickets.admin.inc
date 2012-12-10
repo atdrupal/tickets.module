@@ -5,8 +5,7 @@
 
 function ticket_form($form, &$form_state, $entity, $op = 'edit', $entity_type) {
   if (!$entity->type) $entity->type = $entity_type;
-  
-  //kpr($entity_type);exit;
+
   // Attach fields
   $form['title'] = array(
     '#type' => 'textfield',
@@ -34,9 +33,11 @@ function ticket_form($form, &$form_state, $entity, $op = 'edit', $entity_type) {
 function ticket_form_submit($form, &$form_state) {
   $entity = entity_ui_form_submit_build_entity($form, $form_state);
   $entity->save();
+  $form_state['redirect'] = "admin/structure/tickets";
 
 //  if (isset($entity->field_ref_lesson[LANGUAGE_NONE][0]['target_id'])) {
 //    $form_state['redirect'] = "node/{$entity->field_ref_lesson[LANGUAGE_NONE][0]['target_id']}";
+//    $form_state['redirect'] = "admin/structure/tickets";
 //  }
 //  else {
 //    $form_state['redirect'] = 'admin/structure/langgo/machine/recommend';

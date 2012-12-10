@@ -4,16 +4,22 @@ core = 7.x
 
 dependencies[] = entity
 dependencies[] = views
+dependencies[] = options
+dependencies[] = inline_entity_form
+dependencies[] = text
+dependencies[] = file
+dependencies[] = entityreference
 
 files[] = tickets.admin.inc
 ;files[] = ticket_type.admin.inc
-;files[] = views/ticket.views.inc
-;files[] = views/ticket_handler_link_field.inc
-;files[] = views/ticket_handler_delete_link_field.inc
-;files[] = views/ticket_handler_edit_link_field.inc
-;files[] = views/ticket_handler_ticket_operations_field.inc
+files[] = views/ticket.views.inc
+files[] = views/handler/ticket/ticket_handler_link_field.inc
+files[] = views/handler/ticket/ticket_handler_delete_link_field.inc
+files[] = views/handler/ticket/ticket_handler_edit_link_field.inc
+files[] = views/handler/ticket/ticket_handler_operations_field.inc
 files[] = includes/tickets.fields.inc
 files[] = includes/tickets.inc
+files[] = token/ticket.tokens.inc
 
 
 files [] = lib/Ticket.php

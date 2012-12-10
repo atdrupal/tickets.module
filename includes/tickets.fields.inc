@@ -21,6 +21,7 @@ function tickets_add_body_field($type, $label = 'Body') {
       'entity_types' => array($entity_type),
     );
     $field = field_create_field($field);
+    watchdog('status', 'Created field %field_name', array('%field_name' => $field_name));
   }
   if (empty($instance)) {
     $instance = array(
@@ -41,7 +42,8 @@ function tickets_add_body_field($type, $label = 'Body') {
         ),
       ),
     );
-    $instance = field_create_instance($instance);
+    field_create_instance($instance);
+    watchdog('status', 'Add field %field_name to %bundle',  array('%field_name' => $field_name, '%bundle' => $bundle));
   }
   return $instance;
 }
@@ -64,6 +66,7 @@ function tickets_add_file_field() {
       'cardinality' => FIELD_CARDINALITY_UNLIMITED,
     );
     $field = field_create_field($field);
+    watchdog('status', 'Created field %field_name', array('%field_name' => $field_name));
   }
   if (empty($instance)) {
     $instance = array(
@@ -74,13 +77,15 @@ function tickets_add_file_field() {
       'widget' => array('type' => 'file_generic'), 
       'settings' => array('progress_indicator' => 'bar'), 
     );
-    $instance = field_create_instance($instance);
+    field_create_instance($instance);
+    watchdog('status', 'Add field %field_name to %bundle',  array('%field_name' => $field_name, '%bundle' => $bundle));
   }
   return $instance;
 }
 
 
 function tickets_category_add_term_reference() {
+  
   $entity_type = $bundle = 'ticket_category';
   $field_names = array(
     TICKET_DEFAULT_VOCA_IMPORTANTCE => array(
@@ -92,12 +97,13 @@ function tickets_category_add_term_reference() {
       'name' => 'ticket_category_state',
     )
   );
-  foreach ($field_names as $voca_machine => $field_name) {
-    $field = field_info_field($field_name['name']);
-    $instance = field_info_instance($entity_type, $field_name['name'], $bundle);
-    if (empty($field)) {
-      $field = array(
-        'field_name' => $field_name['name'],
+  foreach ($field_names as $voca_machine => $field) {
+    
+    $field_info = field_info_field($field['name']);
+    $instance = field_info_instance($entity_type, $field['name'], $bundle);
+    if (empty($field_info)) {
+      $field_info = array(
+        'field_name' => $field['name'],
         'type' => 'taxonomy_term_reference',
         'cardinality' => FIELD_CARDINALITY_UNLIMITED,
         'settings' => array(
@@ -109,13 +115,15 @@ function tickets_category_add_term_reference() {
           ),
         ),
       );
-      field_create_field($field);
+      field_create_field($field_info);
+      watchdog('status', 'Created field %field_name', array('%field_name' => $field['name']));
     }
+    
     if (empty($instance)) {
       $instance = array(
-        'field_name' => $field_name['name'],
+        'field_name' => $field['name'],
         'entity_type' => $entity_type,
-        'label' => $field_name['label'],
+        'label' => $field['label'],
         'bundle' => $bundle,
         'description' => '',
         'widget' => array(
@@ -134,9 +142,9 @@ function tickets_category_add_term_reference() {
         ),
       );
       field_create_instance($instance);
+      watchdog('status', 'Add field %field_name to %bundle',  array('%field_name' => $field['name'], '%bundle' => $bundle));
     }
   }
-  return $instance;
 }
 
 
@@ -154,22 +162,23 @@ function tickets_add_entity_reference() {
       'target_type' => 'ticket_category'
     )
   );
-  foreach ($field_names as $field_name => $field_info) {
-    $field = field_info_field($field_name);
+  foreach ($field_names as $field_name => $field) {
+    $field_info = field_info_field($field_name);
     $instance = field_info_instance($entity_type, $field_name, $bundle);
-    if (empty($field)) {
-      $field = array(
+    if (empty($field_info)) {
+      $field_info = array(
         'field_name' => $field_name,
         'type' => 'entityreference',
-        'settings' => array('target_type' => $field_info['target_type']),
+        'settings' => array('target_type' => $field['target_type']),
       );
-      field_create_field($field);
+      field_create_field($field_info);
+      watchdog('status', 'Created field %field_name', array('%field_name' => $field['name']));
     }
     if (empty($instance)) {
       $instance = array(
         'field_name' => $field_name,
         'entity_type' => $entity_type,
-        'label' => $field_info['label'],
+        'label' => $field['label'],
         'bundle' => $bundle,
         'description' => '',
         'widget' => array(
@@ -178,7 +187,7 @@ function tickets_add_entity_reference() {
         ),
       );
       field_create_instance($instance);
+      watchdog('status', 'Add field %field_name to %bundle',  array('%field_name' => $field['name'], '%bundle' => $bundle));
     }
   }
-//  return $instance;
 }

@@ -14,8 +14,8 @@ class EntityTicketUIController extends EntityDefaultUIController {
       'page arguments' => array(1),
       'access arguments' => array('access_content'),
       'type' => MENU_CALLBACK,
-  );
-  return $items;
+    );
+    return $items;
   }
 
   public function overviewTable($conditions = array()) {

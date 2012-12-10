@@ -33,7 +33,7 @@ function ticket_category_form($form, &$form_state, $entity, $op = 'edit', $entit
 function ticket_category_form_submit($form, &$form_state) {
   $entity = entity_ui_form_submit_build_entity($form, $form_state);
   $entity->save();
-
+  $form_state['redirect'] = 'admin/structure/ticket-categorys';
 //  if (isset($entity->field_ref_lesson[LANGUAGE_NONE][0]['target_id'])) {
 //    $form_state['redirect'] = "node/{$entity->field_ref_lesson[LANGUAGE_NONE][0]['target_id']}";
 //  }

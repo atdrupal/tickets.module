@@ -23,7 +23,7 @@ function tickets_schema() {
         'not null' => TRUE,
       ),
       'type' => array(
-        'description' => 'The {ticket_type}.type of this ticket.',
+        'description' => 'The type of this ticket.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
@@ -73,7 +73,7 @@ function tickets_schema() {
         'not null' => TRUE,
       ),
       'type' => array(
-        'description' => 'The {ticket_type}.type of this ticket.',
+        'description' => 'The type of this ticket.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
@@ -113,6 +113,73 @@ function tickets_schema() {
       'changed' => array('changed'),
     ),
   );
+  $schema['ticket_comments'] = array(
+    'description' => 'The base table for ticket comments entity.',
+    'fields' => array(
+      'ticket_cid' => array(
+        'description' => 'Primary Key: Identifier for a ticket comments.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'description' => 'The type of this ticket comments.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'ticket_id' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The {ticket}.ticket_id to which this comment is a reply.',
+      ),
+      'priority' => array(
+        'description' => 'The importance level reference vacabulary ticket_importance.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'state' => array(
+        'description' => 'The state reference vacabulary ticket_state.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'assigned' => array(
+        'description' => 'The {users}. uid assigned for ticket.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the ticket was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when the ticket was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this machine; initially, this is the user that created it.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('ticket_cid'),
+    'indexes' => array(
+      'bundle' => array('type'),
+      'users' => array('uid'),
+      'created' => array('created'),
+      'changed' => array('changed'),
+    ),
+  );
   return $schema;
 }
 
@@ -124,4 +191,11 @@ function tickets_install() {
   //Create two taxonomies 
   tickets_vocabulary_add();
   tickets_taxonomy_term_add();
+  
+  //Create field
+  tickets_add_body_field('ticket');
+  tickets_add_file_field('ticket');
+  tickets_add_entity_reference();
+  tickets_category_add_term_reference('ticket_category');
+  
 }
