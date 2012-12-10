@@ -80,3 +80,8 @@ function ticket_comments_schema() {
   );
   return $schema;
 }
+
+
+function ticket_comments_install() {
+  
+}

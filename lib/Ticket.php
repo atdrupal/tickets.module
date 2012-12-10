@@ -7,7 +7,7 @@ class TicketEntity extends Entity {
   public $created;
   public $changed;
 
-  public function __construct(array $values = array(), $entityType = NULL) {
+  public function __construct(array $values = array(), $entityType = 'ticket') {
     parent::__construct($values, $entityType);
 
     if (!$this->created) $this->created = REQUEST_TIME;

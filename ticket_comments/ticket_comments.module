@@ -3,6 +3,7 @@
 require_once dirname(__FILE__) . '/controller/TicketCommentEntityMetaController.php';
 require_once dirname(__FILE__) . '/controller/TicketComment.php';
 require_once dirname(__FILE__) . '/controller/TicketCommentUIController.php';
+require_once dirname(__FILE__) . '/ticket_comments.admin.inc';
 
 /**
  * Implements hook_entity_info().
@@ -34,7 +35,7 @@ function ticket_comments_entity_info() {
     'admin ui' => array(
       'path' => 'admin/structure/ticket-comments',
       'file' => 'includes/tickets_category.admin.inc',
-      'controller class' => 'TicketCommentEntityUIController',
+      'controller class' => 'EntityDefaultUIController',
     ),
   );
   
@@ -65,6 +66,14 @@ function ticket_comments_ticket_view($ticket, $view_mode, $langcode) {
   }
 }
 
+function ticket_comments_theme() {
+  return array(
+    'ticket_comments_wrapper' => array(
+      'template' => 'ticket-comments-wrapper',
+      'render element' => 'content',
+    ),
+  );
+}
 
 /**
  * Build the comment-related elements for ticket detail pages.
@@ -73,39 +82,33 @@ function ticket_comments_ticket_view($ticket, $view_mode, $langcode) {
  *  A ticket object.
  */
 function ticket_comments_page_additions($ticket) {
-  $additions = array('add_date' => 'This is data demo');
-//  kpr('callback');exit;
-
-//  // Only attempt to render comments if the ticket has visible comments.
-//  // Unpublished comments are not included in $ticket->comment_count, so show
-//  // comments unconditionally if the user is an administrator.
-//  if (($ticket->comment_count && user_access('access comments')) || user_access('administer comments')) {
-//    $mode = variable_get('comment_default_mode_' . $ticket->type, COMMENT_MODE_THREADED);
-//    $comments_per_page = variable_get('comment_default_per_page_' . $ticket->type, 50);
-//    if ($cids = comment_get_thread($ticket, $mode, $comments_per_page)) {
-//      $comments = comment_load_multiple($cids);
-//      comment_prepare_thread($comments);
-//      $build = comment_view_multiple($comments, $ticket);
-//      $build['pager']['#theme'] = 'pager';
-//      $additions['comments'] = $build;
-//    }
-//  }
-//
-//  // Append comment form if needed.
-//  if (user_access('post comments') && $ticket->comment == COMMENT_NODE_OPEN && (variable_get('comment_form_location_' . $ticket->type, COMMENT_FORM_BELOW) == COMMENT_FORM_BELOW)) {
-//    $build = drupal_get_form("comment_ticket_{$ticket->type}_form", (object) array('nid' => $ticket->nid));
-//    $additions['comment_form'] = $build;
-//  }
-//
-//  if ($additions) {
-//    $additions += array(
-//      '#theme' => 'comment_wrapper__ticket_' . $ticket->type,
-//      '#ticket' => $ticket,
-//      'comments' => array(),
-//      'comment_form' => array(),
-//    );
-//  }
-
+  module_load_include('inc', 'ticket_comments', 'ticket_comments');
+  $ticket_comment = ticket_comments_create(array('type' => 'ticket_comments'));
+//  kpr($ticket_comments);exit;
+  $build = drupal_get_form('ticket_comments_form', $ticket_comment, 'add', 'ticket_comments', $ticket);
+  $additions['comment_form'] = $build;
+  
+//  $ticket_comments = ticket_comments_load_multiple(array(), array('ticket_id' => 1));
+  $ticket_comments = entity_load('ticket_comments' , FALSE , array('ticket_id' => 1), FALSE);
+  kpr($ticket_comments);
+  kpr($ticket->ticket_id);exit;
+  $additions['comments_ticket'] = $ticket_comments;
+  
+  
+  
+  if ($additions) {
+    $additions += array(
+      '#theme' => 'ticket_comments_wrapper',
+      '#ticket' => $ticket,
+      'comments' => array(),
+      'comment_form' => array(),
+    );
+  }
   return $additions;
 }
+
+//function ticket_comments_form($form, &$form_state, $ticket_comments) {
+//  field_attach_form('ticket_comments', $ticket_comments, $form, $form_state);
+//  return $form;
+//}
 

@@ -6,8 +6,9 @@ class TicketComment extends Entity {
   public $uid;
   public $created;
   public $changed;
+  public $ticket_id;
 
-  public function __construct(array $values = array(), $entityType = NULL) {
+  public function __construct(array $values = array(), $entityType = 'ticket_comments') {
     parent::__construct($values, $entityType);
 
     if (!$this->created) $this->created = REQUEST_TIME;
