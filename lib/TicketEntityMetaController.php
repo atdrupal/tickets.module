@@ -11,7 +11,7 @@ class TicketEntityMetaController extends EntityDefaultMetadataController {
       'label' => t('Title'),
       'description' => t('The ticket title.'),
       'setter callback' => 'entity_property_verbatim_set',
-      'setter permission' => 'administer ticket',
+      'setter permission' => 'administer tickets',
       'schema field' => 'title',
     );
 
@@ -19,7 +19,7 @@ class TicketEntityMetaController extends EntityDefaultMetadataController {
       'type' => 'ticket',
       'getter callback' => 'entity_property_getter_method',
       'setter callback' => 'entity_property_verbatim_set',
-      'setter permission' => 'administer ticket',
+      'setter permission' => 'administer tickets',
       'required' => TRUE,
       'description' => t('The ticket type.'),
     ) + $properties['type'];
@@ -32,17 +32,25 @@ class TicketEntityMetaController extends EntityDefaultMetadataController {
       'description' => t("The owner of the ticket."),
       'getter callback' => 'entity_property_getter_method',
       'setter callback' => 'entity_property_setter_method',
-      'setter permission' => 'administer ticket',
+      'setter permission' => 'administer tickets',
       'required' => TRUE,
       'schema field' => 'uid',
     );
 
+    $properties['weight'] = array(
+      'label' => t("Ticket weight"),
+      'type' => 'numeric',
+      'description' => t("The ticket weight."),
+      'setter callback' => 'entity_property_verbatim_set',
+      'setter permission' => 'administer tickets',
+      'schema field' => 'weight',
+    );
     $properties['created'] = array(
       'label' => t("Date created"),
       'type' => 'date',
       'description' => t("The date the ticket was created."),
       'setter callback' => 'entity_property_verbatim_set',
-      'setter permission' => 'administer ticket',
+      'setter permission' => 'administer tickets',
       'schema field' => 'created',
     );
     $properties['changed'] = array(

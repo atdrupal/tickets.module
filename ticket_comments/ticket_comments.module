@@ -92,7 +92,7 @@ function ticket_comments_page_additions($ticket) {
   $additions['comment_form'] = $build;
   
   //Get comments on ticket
-  $ticket_comments = ticket_comments_load_multiple(FALSE, array('ticket_id' => 1));
+  $ticket_comments = ticket_comments_load_multiple(FALSE, array('ticket_id' => $ticket->ticket_id));
   $build = ticket_comments_view_multiple($ticket_comments, $ticket);
   $build['pager']['#theme'] = 'pager';
   $additions['comments'] = $build;
@@ -153,6 +153,13 @@ function ticket_comments_view_multiple($ticket_comments, $ticket, $view_mode = '
   return $build;
 }
 
+
+/**
+ * Implements hook_permission
+ */
+function ticket_comments_permission() {
+  
+}
 
 
 //function ticket_comments_form($form, &$form_state, $ticket_comments) {

@@ -1,7 +1,6 @@
 <?php
 
-define('TICKET_DEFAULT_VOCA_IMPORTANTCE', 'ticket_importance');
-define('TICKET_DEFAULT_VOCA_STATE', 'ticket_state');
+
 
 function tickets_vocabulary_add() {
   $vocabularies = array (

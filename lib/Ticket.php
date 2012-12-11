@@ -17,4 +17,12 @@ class TicketEntity extends Entity {
   protected function defaultUri() {
       return array('path' => 'ticket/' . $this->ticket_id);
   }
+  
+  /**
+   * Returns the user owning this ticket.
+   */
+  public function user() {
+    return user_load($this->uid);
+  }
+
 }

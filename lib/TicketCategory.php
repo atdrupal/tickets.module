@@ -17,4 +17,12 @@ class TicketCategoryEntity extends Entity {
   protected function defaultUri() {
       return array('path' => 'ticket-category/' . $this->ticket_cid);
   }
+  
+  /**
+   * Returns the user owning this ticket category.
+   */
+  public function user() {
+    return user_load($this->uid);
+  }
+  
 }

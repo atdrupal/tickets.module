@@ -1,0 +1,19 @@
+/* 
+    Document   : tickets.css
+    Created on : Dec 11, 2012, 8:04:05 PM
+    Author     : duynguyen
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+  display: block;
+}
+
+tr.Low {
+  background-color: green !important;
+}
+tr.Highest {
+  background-color: yellowgreen !important;
+}
+

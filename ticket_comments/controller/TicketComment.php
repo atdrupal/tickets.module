@@ -18,4 +18,17 @@ class TicketComment extends Entity {
   protected function defaultUri() {
       return array('path' => 'ticket-comments/' . $this->ticket_cid);
   }
+  
+  /**
+   * Returns the user owning this ticket comments.
+   */
+  public function user() {
+    return user_load($this->uid);
+  }
+  /**
+   * Returns the user owning this ticket comments.
+   */
+  public function ticket() {
+    return ticket_load($this->ticket_id);
+  }
 }

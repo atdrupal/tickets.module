@@ -5,11 +5,11 @@ class TicketCommentEntityMetaController extends EntityDefaultMetadataController 
     $info = parent::entityPropertyInfo();
     $properties = &$info[$this->type]['properties'];
     
-//    unset($properties['ticket_id']);
-    $properties['ticket_id'] = array(
-      'label' => t('Ticket ID'),
+    unset($properties['ticket_id']);
+    $properties['ticket'] = array(
+      'label' => t('Ticket'),
       'type' => 'ticket',
-      'description' => t('The ticket id.'),
+      'description' => t('The ticket.'),
       'getter callback' => 'entity_property_getter_method',
       'setter callback' => 'entity_property_verbatim_set',
       'setter permission' => 'administer ticket comments.',

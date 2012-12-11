@@ -36,6 +36,12 @@ function tickets_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
+      'weight' => array(
+        'description' => 'The weight ticket within their Importance grade.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
       'created' => array(
         'description' => 'The Unix timestamp when the ticket was created.',
         'type' => 'int',

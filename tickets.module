@@ -1,5 +1,7 @@
 <?php
 
+define('TICKET_DEFAULT_VOCA_IMPORTANTCE', 'ticket_importance');
+define('TICKET_DEFAULT_VOCA_STATE', 'ticket_state');
 
 require_once dirname(__FILE__) . '/lib/Ticket.php';
 require_once dirname(__FILE__) . '/lib/TicketUIController.php';
@@ -9,14 +11,6 @@ require_once dirname(__FILE__) . '/includes/tickets.fields.inc';
 require_once dirname(__FILE__) . '/lib/TicketCategory.php';
 require_once dirname(__FILE__) . '/lib/TicketCategoryUIController.php';
 require_once dirname(__FILE__) . '/lib/TicketCategoryInlineEntityForm.php';
-
-
-//require_once dirname(__FILE__) . '/lib/TicketCommentEntityMetaController.php';
-//require_once dirname(__FILE__) . '/lib/TicketComment.php';
-//require_once dirname(__FILE__) . '/lib/TicketCommentUIController.php';
-//require_once dirname(__FILE__) . '/lib/TicketCommentInlineEntityForm.php';
-
-
 require_once dirname(__FILE__) . '/includes/tickets.inc';
 require_once dirname(__FILE__) . '/includes/tickets_category.inc';
 
@@ -68,7 +62,7 @@ function tickets_entity_info() {
     'base table' => 'ticket_category',
     'fieldable' => TRUE,
     'uri callback' => 'entity_class_uri',
-    'access callback' => 'ticket_category_access_callback',
+    'access callback' => 'ticket_access_callback',
     'label callback' => 'ticket_category_label_callback',
     'controller class' => 'EntityAPIController', // 'Lgentity_Entity_MachineController',
     'entity class' => 'TicketCategoryEntity',
@@ -80,7 +74,7 @@ function tickets_entity_info() {
         'label' => 'Ticket Category',
         'admin' => array(
           'path' => 'admin/structure/ticket-categorys',
-          'access arguments' => array('administer ticket category'),
+          'access arguments' => array('administer ticket categorys'),
         ),
       ),
     ),
@@ -99,7 +93,20 @@ function tickets_entity_info() {
  * Access callback for machine entity.
  */
 function ticket_access_callback($op, $entity, $account, $entity_type) {
-  return user_access('administer tickets');
+  if (user_access('administer tickets')) return TRUE;
+  
+  if ($op == 'create' && user_access($op . ' ' . $entity_type)) return TRUE;
+  
+  if ($op == 'update') $op = 'edit';
+  
+  if (user_access($op . 'any' . $entity_type)) return TRUE;
+  
+  if (user_access($op . 'own' . $entity_type)) {
+    if ($entity->uid == $account->uid) {
+      return TRUE;
+    }
+  }
+  return FALSE;
 }
 
 /**
@@ -110,13 +117,6 @@ function ticket_label_callback($entity, $entity_type) {
   return ucwords($entity->title);
 }
 
-
-/**
- * Access callback for machine entity.
- */
-function ticket_category_access_callback($op, $entity, $account, $entity_type) {
-  return user_access('administer ticket category');
-}
 
 /**
  * Label callback for machine entity.
@@ -131,12 +131,25 @@ function ticket_category_label_callback($entity, $entity_type) {
  * Implements hook_permission
  */
 function tickets_permission() {
-  return array(
-    'administer tickets' => array(
-      'title' => t('Administer tickets'), 
-      'description' => t('Perform administration tasks for tickets.'),
-    ),
-  );
+  return tickets_permission_info(array('Ticket','Ticket Category'));
+}
+
+function tickets_permission_info($names = array()) {
+  $tasks = array('View', 'Edit', 'Delete');
+  $options = array('own', 'any');
+  foreach ($names as $name) {
+    $name_lower = strtolower($name);
+    $permission['administer ' . $name_lower . 's'] = array('title' => t('Administer ' . $name . 's')); 
+    $permission['create ' . $name_lower] = array('title' => t('Create new ' . $name)); 
+    foreach ($tasks as $task) {
+      foreach ($options as $option) {
+        $task_name = strtolower($task);
+        $permission["{$task_name} {$option} {$name}"] = array('title' => t("{$task} {$option} {$name}"));
+      }
+    }
+  }
+  
+  return $permission; 
 }
 
 
@@ -157,6 +170,11 @@ function tickets_field_extra_fields() {
             'description' => t('The displayed title of the entity.'),
             'weight' => -5,
           ),
+          'weight' => array(
+            'label' => t('weight'),
+            'description' => t('The weight of the entity.'),
+            'weight' => -4,
+          ),
         ),
         'display' => array(
           'title' => array(
@@ -165,6 +183,7 @@ function tickets_field_extra_fields() {
             'weight' => -5,
           ),
         ),
+        
       );
     }
   }
@@ -256,11 +275,6 @@ function tickets_entity_info_alter(&$entity_info) {
 }
 
 
-function tickets_form_alter($form, $form_state, $form_id) {
-//  dsm($form_id);
-}
-
-
 function tickets_theme() {
   return array(
     'ticket' => array(
@@ -286,4 +300,38 @@ function tickets_theme() {
  */
 function template_preprocess_ticket(&$variables) {
 
+}
+
+
+/**
+ * Alter query get user assigned
+ * 
+ * This alter hook, provided by core, and known as hook_query_TAG_alter().
+ *
+ * In this example we alter the query, to filter values from entity
+ * reference field.
+ * We join the current query if the field name is 'field_foo', to the
+ * 'field_bar' table and add a condition based on the joined table.
+ */
+function tickets_query_entityreference_alter(QueryAlterableInterface $query) {
+
+  // Get the base table.
+  $tables = $query->getTables();
+  $base_table = key($tables);
+  $query->innerJoin('users_roles', 'ur', 'ur.uid = ' . $base_table . '.uid');
+  $role = user_role_load_by_name('administrator');
+  // Add conditions.
+  //Now get only administrator role.
+  $query->condition('ur.rid', $role->rid);
+}
+
+/**
+ * Implements hook_init()
+ */
+function tickets_init() {
+  drupal_add_css(drupal_get_path('module', 'tickets') . '/css/tickets.css') ;
+}
+
+function demo() {
+  print(TICKET_DEFAULT_VOCA_STATE);
 }

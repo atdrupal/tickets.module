@@ -15,6 +15,7 @@ class EntityTicketUIController extends EntityDefaultUIController {
       'access arguments' => array('access_content'),
       'type' => MENU_CALLBACK,
     );
+//    kpr($items  );exit;
     return $items;
   }
 

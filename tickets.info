@@ -31,4 +31,6 @@ files [] = lib/TicketCategoryUIController.php
 files [] = lib/TicketEntityMetaController.php
 files [] = lib/TicketUIController.php
 
+files [] = css/tickets.css
+
 

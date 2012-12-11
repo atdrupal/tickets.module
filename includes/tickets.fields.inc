@@ -105,7 +105,7 @@ function tickets_category_add_term_reference() {
       $field_info = array(
         'field_name' => $field['name'],
         'type' => 'taxonomy_term_reference',
-        'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+//        'cardinality' => FIELD_CARDINALITY_UNLIMITED,
         'settings' => array(
           'allowed_values' => array(
             array(

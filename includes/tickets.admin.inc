@@ -5,8 +5,7 @@
 
 function ticket_form($form, &$form_state, $entity, $op = 'edit', $entity_type) {
   if (!$entity->type) $entity->type = $entity_type;
-  kpr($form);
-  kpr($form_state);
+
   // Attach fields
   $form['title'] = array(
     '#type' => 'textfield',
