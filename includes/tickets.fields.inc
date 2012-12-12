@@ -154,12 +154,25 @@ function tickets_add_entity_reference() {
     'ticket_entity_reference_user' => array(
       'label' => 'Assigned to',
       'name' => 'ticket_entity_reference_user',
-      'target_type' => 'user'
+      'target_type' => 'user',
+      'widget' => array(
+          'type' => 'options_select',
+          'weight' => -4,
+        ),
     ),
     'ticket_entity_reference_category' => array(
       'label' => 'Category',
       'name' => 'ticket_entity_reference_category',
-      'target_type' => 'ticket_category'
+      'target_type' => 'ticket_category',
+      'widget' => array(
+        'weight' => -4,
+        'type' => 'inline_entity_form',
+        'module' => 'inline_entity_form',
+        'settings' => array(
+          'allow_existing'  => 1,
+          'match_operator' => 'CONTAINS',
+        ),
+      )
     )
   );
   foreach ($field_names as $field_name => $field) {
@@ -181,10 +194,7 @@ function tickets_add_entity_reference() {
         'label' => $field['label'],
         'bundle' => $bundle,
         'description' => '',
-        'widget' => array(
-          'type' => 'options_select',
-          'weight' => -4,
-        ),
+        'widget' => $field['widget'],
       );
       field_create_instance($instance);
       watchdog('status', 'Add field %field_name to %bundle',  array('%field_name' => $field['name'], '%bundle' => $bundle));

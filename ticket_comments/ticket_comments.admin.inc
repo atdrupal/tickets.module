@@ -10,13 +10,12 @@ function ticket_comments_form($form, &$form_state, $entity, $op = 'edit', $entit
   $form_state['ticket_id'] = $ticket->ticket_id;
   $form_state['ticket'] = $ticket;
   
-
-  $category = $ticket->ticket_entity_reference_category[LANGUAGE_NONE][0]['target_id'];
+  $category = $ticket->ticket_entity_reference_category[$GLOBALS['language']->language][0]['target_id'];
   $ticket_category = ticket_category_load($category);
   $entity->ticket_category_importance = $ticket_category->ticket_category_importance;
   $entity->ticket_category_state = $ticket_category->ticket_category_state;
   $entity->ticket_entity_reference_user = $ticket->ticket_entity_reference_user;
-
+  
   $form_state['ticket_category'] = $ticket_category;
   field_attach_form($entity_type, $entity, $form, $form_state);
   
@@ -24,6 +23,8 @@ function ticket_comments_form($form, &$form_state, $entity, $op = 'edit', $entit
   $form['actions']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
+    '#prefix' => '<div class="submit">',
+    '#suffix' => '</div>'
   );
   return $form;
 }
@@ -47,15 +48,4 @@ function ticket_comments_form_submit($form, &$form_state) {
   
   $ticket_category->save($ticket_category);
   $ticket->save($ticket);
-  
-
-//      $form_state['redirect'] = "admin/structure/ticket_commentss";
-
-//  if (isset($entity->field_ref_lesson[LANGUAGE_NONE][0]['target_id'])) {
-//    $form_state['redirect'] = "node/{$entity->field_ref_lesson[LANGUAGE_NONE][0]['target_id']}";
-//    $form_state['redirect'] = "admin/structure/ticket_commentss";
-//  }
-//  else {
-//    $form_state['redirect'] = 'admin/structure/langgo/machine/recommend';
-//  }
 }

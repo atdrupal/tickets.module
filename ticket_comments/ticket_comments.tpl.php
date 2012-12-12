@@ -60,21 +60,22 @@
  */
 ?>
 <div class="<?php print $classes; ?> clearfix"<?php print $attributes; ?>>
-  <?php print $picture ?>
-
-  <?php if ($new): ?>
-    <span class="new"><?php print $new ?></span>
-  <?php endif; ?>  
-  <div class="submitted">
-    <?php print $permalink; ?>
-    <?php print $submitted; ?>
+  <div class="attribution">
+    <?php print $picture ?>
+    <div class="submitted">
+      <p class="commenter-name">
+        <?php print $author; ?>
+      </p>
+      <p class="comment-time">
+        <?php print $created; ?>
+      </p>
+      
+    </div>
   </div>
-
-  <div class="content"<?php print $content_attributes; ?>>
+  <div class="content comment-text"<?php print $content_attributes; ?>>
     <?php
       // We hide the comments and links now so that we can render them later.
-//      hide($content['links']);
-      print render($elements->content);
+      print render($content);
     ?>
     <?php if ($signature): ?>
     <div class="user-signature clearfix">
@@ -83,5 +84,4 @@
     <?php endif; ?>
   </div>
 
-  <?php // print render($content['links']) ?>
 </div>

@@ -38,6 +38,12 @@ function ticket_comments_entity_info() {
       'file' => 'ticket_comments.admin.inc',
       'controller class' => 'EntityDefaultUIController',
     ),
+    'view modes' => array(
+      'full' => array(
+        'label' => t('Full content'),
+        'custom settings' => FALSE,
+      ),
+    ),
   );
   
   return $info;
@@ -73,7 +79,7 @@ function ticket_comments_theme() {
       'render element' => 'content',
     ),
     'ticket_comments' => array(
-      'variables' => array('elements' => null),
+        'render element' => 'elements',
       'template' => 'ticket_comments',
     ),
   );
@@ -93,10 +99,11 @@ function ticket_comments_page_additions($ticket) {
   
   //Get comments on ticket
   $ticket_comments = ticket_comments_load_multiple(FALSE, array('ticket_id' => $ticket->ticket_id));
-  $build = ticket_comments_view_multiple($ticket_comments, $ticket);
-  $build['pager']['#theme'] = 'pager';
-  $additions['comments'] = $build;
-  
+  if (!empty($ticket_comments)) {
+    $build = ticket_comments_view_multiple($ticket_comments, $ticket);
+    $build['pager']['#theme'] = 'pager';
+    $additions['comments'] = $build;
+  }
   
   if ($additions) {
     $additions += array(
@@ -113,19 +120,28 @@ function ticket_comments_view($ticket_comment, $ticket, $view_mode = 'full', $la
   if (!isset($langcode)) {
     $langcode = $GLOBALS['language_content']->language;
   }
+  // Allow modules to change the view mode.
+  $context = array(
+    'entity_type' => 'ticket_comments',
+    'entity' => $ticket_comment,
+    'langcode' => $langcode,
+  );
+  drupal_alter('entity_view_mode', $view_mode, $context);
   
-  $ticket_comment->content = array();
-  
+  $ticket_comment->content['#ticket_comments'] = $ticket_comment;
   
   field_attach_prepare_view('ticket_comments', array($ticket_comment->comment_id => $ticket_comment), $view_mode, $langcode);
   entity_prepare_view('ticket_comments', array($ticket_comment->comment_id => $ticket_comment), $langcode);
   $ticket_comment->content += field_attach_view('ticket_comments', $ticket_comment, $view_mode, $langcode);
-  
+
   // Allow modules to make their own additions to the comment.
   module_invoke_all('ticket_comments_view', $ticket_comment, $view_mode, $langcode);
   module_invoke_all('entity_view', $ticket_comment, 'ticket_comments', $view_mode, $langcode);
-  
+  $ticket_comment->content['#ticket'] = $ticket;
+  $ticket_comment->content += array('#view_mode' => $view_mode);
   $build = $ticket_comment->content;
+  
+  unset($ticket_comment->content);
   // We don't need duplicate rendering info in ticket_comment->content.
 
   $build += array(
@@ -134,7 +150,6 @@ function ticket_comments_view($ticket_comment, $ticket, $view_mode = 'full', $la
     '#view_mode' => $view_mode,
     '#language' => $langcode,
   );
-
   return $build;
 }
 
@@ -162,8 +177,29 @@ function ticket_comments_permission() {
 }
 
 
-//function ticket_comments_form($form, &$form_state, $ticket_comments) {
-//  field_attach_form('ticket_comments', $ticket_comments, $form, $form_state);
-//  return $form;
-//}
+function template_preprocess_ticket_comments(&$variables) {
+  $ticket_comments = $variables['elements']['#ticket_comments'];
+  $ticket = $variables['elements']['#ticket'];
+  $variables['ticket_comments']   = $ticket_comments;
+  $variables['ticket']      = $ticket;
+  
+  
+  $variables['created']   = format_date($ticket_comments->created);
+  $variables['changed']   = format_date($ticket_comments->changed);
 
+  $account = user_load($ticket_comments->uid);
+  $variables['author']    = theme('username', array('account' => $account));
+  $variables['picture']   = theme_get_setting('toggle_comment_user_picture') ? theme('user_picture', array('account' => $account)) : '';
+  $variables['signature'] = $account->signature;
+
+  $variables['submitted'] = t('Submitted by !username on !datetime', array('!username' => $variables['author'], '!datetime' => $variables['created']));
+
+  field_attach_preprocess('ticket_comments', $ticket_comments, $variables['elements'], $variables);
+
+  // Helpful $content variable for templates.
+  foreach (element_children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+  $variables['classes_array'][] = 'comment';
+
+}

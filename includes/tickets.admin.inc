@@ -112,6 +112,3 @@ function ticket_edit_form_submit(&$form, &$form_state) {
   $ticket->save();
 }
 
-function tickets_form_alter($form, $form_state, $id) {
-//  kpr($form);exit;
-}

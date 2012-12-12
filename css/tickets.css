@@ -112,3 +112,19 @@ div.assigned span {
   display: none;
 }
 
+
+/**Ticket comments css **/
+form#ticket-comments-form div.field-name-ticket-category-importance ,
+form#ticket-comments-form div.field-name-ticket-entity-reference-user,
+form#ticket-comments-form div.field-name-ticket-category-state {
+  float: left;
+  width: auto;
+}
+form#ticket-comments-form div.field-name-ticket-comments-body {
+  float: left;
+  width: 100%;
+}
+form#ticket-comments-form div.submit {
+  float: left;
+  
+}
