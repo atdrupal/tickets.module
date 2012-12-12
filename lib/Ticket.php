@@ -26,3 +26,21 @@ class TicketEntity extends Entity {
   }
 
 }
+
+
+
+
+/**
+ * Commerce Product translation handler.
+ *
+ * This class is registered in commerce_product.module using the translation
+ * property the Entity Translation module uses via hook_entity_info().
+ *
+ * @see commerce_product_entity_info()
+ */
+class EntityTranslationTicketHandler extends EntityTranslationDefaultHandler {
+
+  public function __construct($entity_type, $entity_info, $entity) {
+    parent::__construct('ticket', $entity_info, $entity);
+  }
+}

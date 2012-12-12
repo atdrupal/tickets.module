@@ -10,6 +10,8 @@ dependencies[] = text
 dependencies[] = file
 dependencies[] = entityreference
 dependencies[] = devel
+dependencies[] = editablefields
+dependencies[] = draggableviews
 
 files[] = tickets.admin.inc
 ;files[] = ticket_type.admin.inc

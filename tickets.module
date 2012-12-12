@@ -26,7 +26,7 @@ function tickets_entity_info() {
     'uri callback' => 'entity_class_uri',
     'access callback' => 'ticket_access_callback',
     'label callback' => 'ticket_label_callback',
-    'controller class' => 'EntityAPIController', // 'Lgentity_Entity_MachineController',
+    'controller class' => 'EntityAPIController',
     'entity class' => 'TicketEntity',
     'metadata controller class' => 'TicketEntityMetaController',
     'entity keys' => array('id' => 'ticket_id', 'bundle' => 'type'),
@@ -35,6 +35,7 @@ function tickets_entity_info() {
       'ticket' => array(
         'label' => 'Ticket',
         'admin' => array(
+          //Path manage fields
           'path' => 'admin/structure/tickets',
           'access arguments' => array('administer tickets'),
         ),
@@ -53,6 +54,40 @@ function tickets_entity_info() {
       'teaser' => array(
         'label' => t('Teaser'),
         'custom settings' => FALSE,
+      ),
+    ),
+      
+     // Add translation support.
+    'translation' => array(
+      'locale' => TRUE,
+      'entity_translation' => array(
+        'bundle callback' => 'ticket_entity_translation_supported_type',
+//        'base path' => 'ticket/%ticket',
+        'base path' => 'admin/structure/tickets/manage/%ticket',
+        'default settings' => array(
+          'default_language' => LANGUAGE_NONE,
+        ),
+      ),
+    ), 
+
+    // Add title replacement support for translations.
+    'field replacement' => array(
+      'title' => array(
+        'field' => array(
+          'type' => 'text',
+          'cardinality' => 1,
+          'translatable' => TRUE,
+        ),
+        'instance' => array(
+          'label' => t('Title'),
+          'required' => TRUE,
+          'settings' => array(
+            'text_processing' => 0,
+          ),
+          'widget' => array(
+            'weight' => -5,
+          ),
+        ),
       ),
     ),
   );
@@ -83,11 +118,19 @@ function tickets_entity_info() {
       'file' => 'includes/tickets_category.admin.inc',
       'controller class' => 'TicketCategoryEntityUIController',
     ),
+   
+   
   );
   
   return $info;
 }
 
+/**
+ * Support entity translation.
+ */
+function ticket_entity_translation_supported_type($type) {
+  return 4;
+}
 
 /**
  * Access callback for machine entity.
@@ -332,6 +375,21 @@ function tickets_init() {
   drupal_add_css(drupal_get_path('module', 'tickets') . '/css/tickets.css') ;
 }
 
-function demo() {
-  print(TICKET_DEFAULT_VOCA_STATE);
+function tickets_admin_paths() {
+  $paths = array(
+    'ticket/*/add' => TRUE, 
+    'ticket/*/edit' => TRUE,
+  );
+  return $paths;
+}
+
+/**
+ * Implements hook template_preprocess_views_view_table()
+ */
+function tickets_preprocess_views_view_table(&$vars) {
+  if ($vars['view']->name == 'ticket_assigned') {
+    if (isset($vars['row_classes'])) {
+      $vars['row_classes'] = unserialize(strtolower(serialize($vars['row_classes']))); 
+    }
+  }
 }

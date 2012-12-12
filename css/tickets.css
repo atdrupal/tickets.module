@@ -10,10 +10,46 @@ root {
   display: block;
 }
 
-tr.Low {
-  background-color: green !important;
+
+tr.highest {
+  background-color: red !important;
 }
-tr.Highest {
-  background-color: yellowgreen !important;
+tr.high {
+  background-color: orange !important;
 }
+tr.normal {
+  background-color: yellow !important;
+}
+tr.lowest {
+  background-color: white !important;
+}
+tr.low {
+  background-color: blue !important;
+}
+div.assigned span, div.assigned div{
+  float: left;
+  text-align: center;
+}
+div.assigned span {
+  line-height: 20px;
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+.view-ticket-assigned tr td {
+  background: none;
+  border: none;
+}
+.view-ticket-assigned div.delete-link , .view-ticket-assigned div.edit-link{
+  float: right;
+}
+
+.view-ticket-assigned div.delete-link {
+  margin-bottom: 50px;
+}
+.view-ticket-assigned div.edit-link {
+  margin-top: 50px;
+}
+
+
 

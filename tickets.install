@@ -42,6 +42,13 @@ function tickets_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
+      'language' => array(
+        'description' => 'The {languages}.language of this ticket.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ),
       'created' => array(
         'description' => 'The Unix timestamp when the ticket was created.',
         'type' => 'int',

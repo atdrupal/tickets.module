@@ -41,3 +41,4 @@ function ticket_category_form_submit($form, &$form_state) {
 //    $form_state['redirect'] = 'admin/structure/langgo/machine/recommend';
 //  }
 }
+

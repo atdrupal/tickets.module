@@ -45,6 +45,15 @@ class TicketEntityMetaController extends EntityDefaultMetadataController {
       'setter permission' => 'administer tickets',
       'schema field' => 'weight',
     );
+    $properties['language'] = array(
+      'label' => t('Language'),
+      'type' => 'token',
+      'description' => t('The language the ticket was created in.'),
+      'setter callback' => 'entity_property_verbatim_set',
+      'options list' => 'entity_metadata_language_list',
+      'schema field' => 'language',
+      'setter permission' => 'administer tickets',
+    );
     $properties['created'] = array(
       'label' => t("Date created"),
       'type' => 'date',
