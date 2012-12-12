@@ -15,13 +15,12 @@ function ticket_form($form, &$form_state, $entity, $op = 'edit', $entity_type) {
     '#required' => TRUE,
     '#weight' => -5,
   );
-//  $langcode = entity_language($entity_type, $entity);
-//  kpr($langcode);
-//  // Simply use default language
-//  $form['language'] = array(
-//    '#type' => 'value',
-//    '#value' => $langcode,
-//  );
+  $langcode = entity_language($entity_type, $entity);
+  // Simply use default language
+  $form['language'] = array(
+    '#type' => 'value',
+    '#value' => $langcode,
+  );
   field_attach_form($entity_type, $entity, $form, $form_state, $langcode);
 
   $form['actions']['#weight'] = 100;
@@ -29,7 +28,6 @@ function ticket_form($form, &$form_state, $entity, $op = 'edit', $entity_type) {
     '#type' => 'submit',
     '#value' => t('Save'),
   );
-//  kpr($form);
   return $form;
 }
 
@@ -40,21 +38,11 @@ function ticket_form_submit($form, &$form_state) {
   $entity = entity_ui_form_submit_build_entity($form, $form_state);
   $entity->save();
   $form_state['redirect'] = "admin/structure/tickets";
-
-//  if (isset($entity->field_ref_lesson[LANGUAGE_NONE][0]['target_id'])) {
-//    $form_state['redirect'] = "node/{$entity->field_ref_lesson[LANGUAGE_NONE][0]['target_id']}";
-//    $form_state['redirect'] = "admin/structure/tickets";
-//  }
-//  else {
-//    $form_state['redirect'] = 'admin/structure/langgo/machine/recommend';
-//  }
 }
 
 
 function ticket_page_edit($ticket) {
-//  kpr($ticket);exit;
   return drupal_get_form('ticket_form',$ticket, 'edit', 'ticket');
-  return '<a>callback</a>';
 }
 
 
@@ -121,11 +109,9 @@ function ticket_edit_form_validate(&$form, &$form_state) {
 function ticket_edit_form_submit(&$form, &$form_state) {
   $ticket = entity_ui_controller('ticket')->entityFormSubmitBuildEntity($form, $form_state);
   // Save the ticket and go back to the list of tickets
-  
   $ticket->save();
-//  $form_state['redirect'] = '';
 }
 
 function tickets_form_alter($form, $form_state, $id) {
-
+//  kpr($form);exit;
 }

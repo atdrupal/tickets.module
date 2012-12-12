@@ -12,7 +12,7 @@ function tickets_add_body_field($type, $label = 'Body') {
   // Add or remove the body field, as needed.
   $field_name = 'ticket_body';
   $entity_type = $bundle = 'ticket';
-  $field = field_info_field($field_name);//kpr($field);
+  $field = field_info_field($field_name);
   $instance = field_info_instance($entity_type, $field_name, $bundle);
   if (empty($field)) {
     $field = array(
