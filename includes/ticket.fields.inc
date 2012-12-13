@@ -27,8 +27,14 @@ function ticket_create_field_ref_term($entity_type, $bundle) {
         'type' => 'taxonomy_term_reference',
         'settings' => array('allowed_values' => array(array('vocabulary' => $vc_machine,'parent' => 0))),
       );
-      $field =  field_create_field($field);
-      watchdog('status', 'Created field %field_name', array('%field_name' => $field['field_name']));
+      try {
+        $field =  field_create_field($field);
+        watchdog('status', 'Created field %field_name', array('%field_name' => $field['field_name']));
+      }
+      catch (Exception $e) {
+        drupal_set_message(t('There was a problem creating field %label: !message', array('%label' => $field['field_name'], '!message' => $e->getMessage())), 'error');
+        return;
+      }
     }
     $widget = array('type' => 'options_select','weight' => -4);
     $display = array(
@@ -55,8 +61,14 @@ function ticket_create_field_ref_user($entity_type, $bundle) {
       'type' => 'entityreference',
       'settings' => array('target_type' => 'user'),
     );
-    $field = field_create_field($field);
-    watchdog('status', 'Created field %field_name', array('%field_name' => $field['field_name']));
+    try {
+      $field =  field_create_field($field);
+      watchdog('status', 'Created field %field_name', array('%field_name' => $field['field_name']));
+    }
+    catch (Exception $e) {
+      drupal_set_message(t('There was a problem creating field %label: !message', array('%label' => $field['field_name'], '!message' => $e->getMessage())), 'error');
+      return;
+    }
   }
   $widget = array(
     'type' => 'options_select',
@@ -82,8 +94,14 @@ function ticket_create_field_ref_category($entity_type, $bundle) {
       'type' => 'entityreference',
       'settings' => array('target_type' => 'ticket_category'),
     );
-    $field = field_create_field($field);
-    watchdog('status', 'Created field %field_name', array('%field_name' => $field['field_name']));
+    try {
+      $field =  field_create_field($field);
+      watchdog('status', 'Created field %field_name', array('%field_name' => $field['field_name']));
+    }
+    catch (Exception $e) {
+      drupal_set_message(t('There was a problem creating field %label: !message', array('%label' => $field['field_name'], '!message' => $e->getMessage())), 'error');
+      return;
+    }
   }
   $widget = array(
     'weight' => -4,
@@ -115,17 +133,22 @@ function ticket_create_field_body($entity_type, $bundle) {
     'default' => array('label' => 'hidden', 'type' => 'text_default'), 
     'teaser' => array('label' => 'hidden', 'type' => 'text_summary_or_trimmed'),
   );
-  $field = field_info_field('field_ticket_body');
+  $field = field_info_field('ticket_body');
   if (empty($field)) {
     $field = array(
       'field_name' => 'ticket_body', 
       'type' => 'text_with_summary', 
-      'entity_types' => array('ticket'),
     );
-    $field =  field_create_field($field);
-    watchdog('status', 'Created field %field_name', array('%field_name' => $field['field_name']));
+    try {
+      $field =  field_create_field($field);
+      watchdog('status', 'Created field %field_name', array('%field_name' => $field['field_name']));
+    }
+    catch (Exception $e) {
+      drupal_set_message(t('There was a problem creating field %label: !message', array('%label' => $field['field_name'], '!message' => $e->getMessage())), 'error');
+      return;
+    }
   }
-  ticket_create_instance($field, $entity_type, $bundle, 'Body', $widget, $settings);
+  ticket_create_instance($field, $entity_type, $bundle, 'Body', $widget, $settings, $display);
 }
 
 
@@ -146,8 +169,14 @@ function ticket_create_field_file($entity_type, $bundle) {
       'entity_types' => array($entity_type),
       'cardinality' => FIELD_CARDINALITY_UNLIMITED,
     );
-    $field =  field_create_field($field);
-    watchdog('status', 'Created field %field_name', array('%field_name' => $field['field_name']));
+    try {
+      $field =  field_create_field($field);
+      watchdog('status', 'Created field %field_name', array('%field_name' => $field['field_name']));
+    }
+    catch (Exception $e) {
+      drupal_set_message(t('There was a problem creating field %label: !message', array('%label' => $field['field_name'], '!message' => $e->getMessage())), 'error');
+      return;
+    }
   }
   //create an instance
   $widget = array('type' => 'file_generic'); 
@@ -178,7 +207,13 @@ function ticket_create_instance($field, $entity_type, $bundle, $label, $widget =
       'settings' => $settings,
       'display' => $display,
     );
-    field_create_instance($instance);
-    watchdog('status', 'Add field %field_name to %bundle',  array('%field_name' => $field['field_name'], '%bundle' => $bundle));
+    try {
+      field_create_instance($instance);
+      watchdog('status', 'Add field %field_name to %bundle',  array('%field_name' => $field['field_name'], '%bundle' => $bundle));
+    }
+    catch (Exception $e) {
+      drupal_set_message(t('There was a problem creating field %label: !message', array('%label' => $instance['label'], '!message' => $e->getMessage())), 'error');
+    }
   }
 }
+    

@@ -33,24 +33,6 @@ function ticket_comment_schema() {
         'default' => 0,
         'description' => 'The {ticket}.ticket_id to which this comment is a reply.',
       ),
-//      'priority' => array(
-//        'description' => 'The importance level reference vacabulary ticket_importance.',
-//        'type' => 'int',
-//        'not null' => TRUE,
-//        'default' => 0,
-//      ),
-//      'state' => array(
-//        'description' => 'The state reference vacabulary ticket_state.',
-//        'type' => 'int',
-//        'not null' => TRUE,
-//        'default' => 0,
-//      ),
-//      'assigned' => array(
-//        'description' => 'The {users}. uid assigned for ticket.',
-//        'type' => 'int',
-//        'not null' => TRUE,
-//        'default' => 0,
-//      ),
       'created' => array(
         'description' => 'The Unix timestamp when the ticket was created.',
         'type' => 'int',
@@ -81,148 +63,11 @@ function ticket_comment_schema() {
   return $schema;
 }
 
-
+/**
+ *Implement hook_install 
+ */
 function ticket_comment_install() {
-  ticket_comment_fields();
-}
-
-function ticket_comment_fields() {
-  
-  $entity_type = $bundle = 'ticket_comment';
-  $field_names = array(
-    TICKET_DEFAULT_VOCA_IMPORTANTCE => array(
-      'label' => 'Importance',
-      'name' => 'ticket_category_importance',
-    ),
-    TICKET_DEFAULT_VOCA_STATE => array(
-      'label' => 'State',
-      'name' => 'ticket_category_state',
-    )
-  );
-  foreach ($field_names as $voca_machine => $field) {
-    
-    $field_info = field_info_field($field['name']);
-    $instance = field_info_instance($entity_type, $field['name'], $bundle);
-    if (empty($field_info)) {
-      $field_info = array(
-        'field_name' => $field['name'],
-        'type' => 'taxonomy_term_reference',
-//        'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-        'settings' => array(
-          'allowed_values' => array(
-            array(
-              'vocabulary' => $voca_machine,
-              'parent' => 0,
-            ),
-          ),
-        ),
-      );
-      field_create_field($field_info);
-      watchdog('status', 'Created field %field_name', array('%field_name' => $field['name']));
-    }
-    
-    if (empty($instance)) {
-      $instance = array(
-        'field_name' => $field['name'],
-        'entity_type' => $entity_type,
-        'label' => $field['label'],
-        'bundle' => $bundle,
-        'description' => '',
-        'widget' => array(
-          'type' => 'options_select',
-          'weight' => -4,
-        ),
-        'display' => array(
-          'default' => array(
-            'type' => 'taxonomy_term_reference_link',
-            'weight' => 10,
-          ),
-          'teaser' => array(
-            'type' => 'taxonomy_term_reference_link',
-            'weight' => 10,
-          ),
-        ),
-      );
-      field_create_instance($instance);
-      watchdog('status', 'Add field %field_name to %bundle',  array('%field_name' => $field['name'], '%bundle' => $bundle));
-    }
-  }
-  
-  
-  
-  // Add or remove the body field, as needed.
-  $label = 'Body';
-  $field_name = 'ticket_comment_body';
-  $entity_type = $bundle = 'ticket_comment';
-  $field = field_info_field($field_name);//kpr($field);
-  $instance = field_info_instance($entity_type, $field_name, $bundle);
-  if (empty($field)) {
-    $field = array(
-      'field_name' => $field_name, 
-      'type' => 'text_with_summary', 
-      'entity_types' => array($entity_type),
-    );
-    $field = field_create_field($field);
-    watchdog('status', 'Created field %field_name', array('%field_name' => $field_name));
-  }
-  if (empty($instance)) {
-    $instance = array(
-      'field_name' => $field_name, 
-      'entity_type' => $entity_type, 
-      'bundle' => $bundle, 
-      'label' => $label, 
-      'widget' => array('type' => 'text_textarea_with_summary'), 
-      'settings' => array('display_summary' => TRUE), 
-      'display' => array(
-        'default' => array(
-          'label' => 'hidden', 
-          'type' => 'text_default',
-        ), 
-        'teaser' => array(
-          'label' => 'hidden', 
-          'type' => 'text_summary_or_trimmed',
-        ),
-      ),
-    );
-    field_create_instance($instance);
-    watchdog('status', 'Add field %field_name to %bundle',  array('%field_name' => $field_name, '%bundle' => $bundle));
-  }
-  
-  
-  $entity_type = $bundle = 'ticket_comment';
-  $field_names = array(
-    'ticket_entity_reference_user' => array(
-      'label' => 'Assigned to',
-      'name' => 'ticket_entity_reference_user',
-      'target_type' => 'user'
-    ),
-  );
-  foreach ($field_names as $field_name => $field) {
-    $field_info = field_info_field($field_name);
-    $instance = field_info_instance($entity_type, $field_name, $bundle);
-    if (empty($field_info)) {
-      $field_info = array(
-        'field_name' => $field_name,
-        'type' => 'entityreference',
-        'settings' => array('target_type' => $field['target_type']),
-      );
-      field_create_field($field_info);
-      watchdog('status', 'Created field %field_name', array('%field_name' => $field['name']));
-    }
-    if (empty($instance)) {
-      $instance = array(
-        'field_name' => $field_name,
-        'entity_type' => $entity_type,
-        'label' => $field['label'],
-        'bundle' => $bundle,
-        'description' => '',
-        'widget' => array(
-          'type' => 'options_select',
-          'weight' => -4,
-        ),
-      );
-      field_create_instance($instance);
-      watchdog('status', 'Add field %field_name to %bundle',  array('%field_name' => $field['name'], '%bundle' => $bundle));
-    }
-  }
+  module_load_include('inc', 'ticket', 'includes/ticket.fields');
+  ticket_create_field_ref_term('ticket_comment', 'ticket_comment');
+  ticket_create_field_body('ticket_comment', 'ticket_comment');
 }
