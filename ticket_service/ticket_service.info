@@ -1,0 +1,6 @@
+name = Ticket  Service
+description = Ticket service
+core = 7.x
+package = "Viet Coop"
+dependencies[] = ticket
+dependencies[] = service
