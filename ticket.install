@@ -1,0 +1,152 @@
+<?php
+
+/**
+ * @file
+ * Sets up the base table for our entity and a table to store information about
+ * the entity types.
+ */
+
+
+/**
+ * Implements hook_schema().
+ */
+function ticket_schema() {
+  $schema = array();
+
+  $schema['ticket'] = array(
+    'description' => 'The base table for ticket entities.',
+    'fields' => array(
+      'ticket_id' => array(
+        'description' => 'Primary Key: Identifier for a ticket.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'description' => 'The type of this ticket.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'title' => array(
+        'description' => 'The name of the ticket - a human-readable identifier.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'weight' => array(
+        'description' => 'The weight ticket within their Importance grade.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'language' => array(
+        'description' => 'The {languages}.language of this ticket.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the ticket was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when the ticket was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this machine; initially, this is the user that created it.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('ticket_id'),
+    'indexes' => array(
+      'bundle' => array('type'),
+      'users' => array('uid'),
+      'created' => array('created'),
+      'changed' => array('changed'),
+    ),
+  );
+  $schema['ticket_category'] = array(
+    'description' => 'The base table for ticket category entity.',
+    'fields' => array(
+      'ticket_cid' => array(
+        'description' => 'Primary Key: Identifier for a ticket.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'description' => 'The type of this ticket.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'name' => array(
+        'description' => 'The name tiket category.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the ticket was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when the ticket was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this machine; initially, this is the user that created it.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('ticket_cid'),
+    'indexes' => array(
+      'bundle' => array('type'),
+      'users' => array('uid'),
+      'created' => array('created'),
+      'changed' => array('changed'),
+    ),
+  );
+  
+  return $schema;
+}
+
+
+/**
+ * Implements hook_install()
+ */
+function ticket_install() {
+  module_load_include('inc', 'ticket', 'includes/ticket.default');
+  module_load_include('inc', 'ticket', 'includes/ticket.fields');
+  //Create two taxonomies 
+  ticket_create_vocabularies();
+  ticket_create_terms();
+  
+  //Add field to ticket category bundle
+  ticket_create_field_ref_term('ticket_category', 'ticket_category');
+  
+  //Add field to ticket bundle
+  ticket_create_field_file('ticket', 'ticket');
+  ticket_create_field_body('ticket', 'ticket');
+  ticket_create_field_ref_category('ticket', 'ticket');
+  ticket_create_field_ref_user('ticket', 'ticket');
+}

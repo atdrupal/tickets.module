@@ -1,0 +1,46 @@
+name = Tickets
+description = Manager system ticket
+core = 7.x
+package = "Viet Coop"
+
+
+;files[] = includes/ticket.default.inc
+files[] = includes/ticket.admin.inc
+files[] = includes/ticket.fields.inc
+files[] = includes/ticket.inc
+files[] = includes/ticket_category.admin.inc
+files[] = includes/ticket_category.inc
+
+
+files[] = controllers/ticket.controller.inc
+files[] = controllers/ticket.meta.controller.inc
+files[] = controllers/ticket.ui.controller.inc
+files[] = controllers/ticket_category.controller.inc
+files[] = controllers/ticket_category.inline_entity_form.inc
+files[] = controllers/ticket_category.meta.controller.inc
+files[] = controllers/ticket_category.ui.controller.inc
+
+
+files[] = views/ticket.views.inc
+files[] = views/handler/ticket/ticket_handler_link_field.inc
+files[] = views/handler/ticket/ticket_handler_delete_link_field.inc
+files[] = views/handler/ticket/ticket_handler_edit_link_field.inc
+files[] = views/handler/ticket/ticket_handler_operations_field.inc
+
+files[] = ticket.module
+
+
+stylesheets[all][] = css/ticket.css
+
+
+dependencies[] = entity
+dependencies[] = views
+dependencies[] = options
+dependencies[] = inline_entity_form
+dependencies[] = text
+dependencies[] = file
+dependencies[] = entityreference
+dependencies[] = devel
+dependencies[] = editablefields
+dependencies[] = draggableviews
+
