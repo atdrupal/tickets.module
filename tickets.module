@@ -373,7 +373,6 @@ function template_preprocess_ticket(&$variables) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
   $variables['title']     = check_plain($ticket->title);
-  kpr($variables);
 }
 
 
