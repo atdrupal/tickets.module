@@ -33,12 +33,17 @@ function ticket_comment_form($form, &$form_state, $entity, $op = 'edit', $entity
  * Submit handler for machine-recommend entity.
  */
 function ticket_comment_form_submit($form, &$form_state) {
-
+  
+  
   $ticket_comment = $form_state['ticket_comment'];
   $ticket = $form_state['ticket'];
+  
+  
   $ticket_category = $form_state['ticket_category'];
   $ticket_comment->ticket_id = $form_state['ticket_id'];
+  
   entity_form_submit_build_entity('ticket_comment', $ticket_comment, $form, $form_state);
+//  kpr($ticket_comment);exit;
   $ticket_comment->save($ticket_comment);
   
   //Update ticket and ticket category

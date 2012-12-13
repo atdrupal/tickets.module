@@ -75,7 +75,7 @@ function ticket_comment_ticket_view($ticket, $view_mode, $langcode) {
 function ticket_comment_theme() {
   return array(
     'ticket_comment_wrapper' => array(
-      'template' => 'ticket-comments-wrapper',
+      'template' => 'ticket-comment-wrapper',
       'render element' => 'content',
     ),
     'ticket_comment' => array(
@@ -201,5 +201,4 @@ function template_preprocess_ticket_comment(&$variables) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
   $variables['classes_array'][] = 'comment';
-  kpr($variables);
 }
