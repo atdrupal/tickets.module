@@ -1,41 +1,22 @@
+
 <?php
 
 /**
  * @file
- * Default theme implementation for comments.
+ * Default theme implementation to display a node.
  *
  * Available variables:
- * - $author: Comment author. Can be link or plain text.
- * - $content: An array of comment items. Use render($content) to print them all, or
- *   print a subset such as render($content['field_example']). Use
+ * - $title: the (sanitized) title of the node.
+ * - $content: An array of node items. Use render($content) to print them all,
+ *   or print a subset such as render($content['field_example']). Use
  *   hide($content['field_example']) to temporarily suppress the printing of a
  *   given element.
- * - $created: Formatted date and time for when the comment was created.
- *   Preprocess functions can reformat it by calling format_date() with the
- *   desired parameters on the $comment->created variable.
- * - $changed: Formatted date and time for when the comment was last changed.
- *   Preprocess functions can reformat it by calling format_date() with the
- *   desired parameters on the $comment->changed variable.
- * - $new: New comment marker.
- * - $permalink: Comment permalink.
- * - $submitted: Submission information created from $author and $created during
- *   template_preprocess_comment().
- * - $picture: Authors picture.
- * - $signature: Authors signature.
- * - $status: Comment status. Possible values are:
- *   comment-unpublished, comment-published or comment-preview.
- * - $title: Linked title.
- * - $classes: String of classes that can be used to style contextually through
- *   CSS. It can be manipulated through the variable $classes_array from
- *   preprocess functions. The default values can be one or more of the following:
- *   - comment: The current template type, i.e., "theming hook".
- *   - comment-by-anonymous: Comment by an unregistered user.
- *   - comment-by-node-author: Comment by the author of the parent node.
- *   - comment-preview: When previewing a new or edited comment.
- *   The following applies only to viewers who are registered users:
- *   - comment-unpublished: An unpublished comment visible only to administrators.
- *   - comment-by-viewer: Comment by the user currently viewing the page.
- *   - comment-new: New comment since last the visit.
+ * - $user_picture: The node author's picture from user-picture.tpl.php.
+ * - $ticket_url: Direct URL of the current node.
+ * - $display_submitted: Whether submission information should be displayed.
+ * - $submitted: Submission information created from $name and $date during
+ *   template_preprocess_node().
+ * 
  * - $title_prefix (array): An array containing additional output populated by
  *   modules, intended to be displayed in front of the main title tag that
  *   appears in the template.
@@ -43,18 +24,34 @@
  *   modules, intended to be displayed after the main title tag that appears in
  *   the template.
  *
- * These two variables are provided for context:
- * - $comment: Full comment object.
- * - $node: Node object the comments are attached to.
- *
  * Other variables:
+ * - $ticket: Full node object. Contains data that may not be safe.
+ * - $type: Node type; for example, story, page, blog, etc.
+ * - $uid: User ID of the node author.
+ * - $created: Time the node was published formatted in Unix timestamp.
  * - $classes_array: Array of html class attribute values. It is flattened
  *   into a string within the variable $classes.
+ * - $zebra: Outputs either "even" or "odd". Useful for zebra striping in
+ *   teaser listings.
+ * - $id: Position of the node. Increments each time it's output.
+ *
+ * Node status variables:
+ * - $view_mode: View mode; for example, "full", "teaser".
+ * - $comment: State of comment settings for the node.
+ * - $is_front: Flags true when presented in the front page.
+ * - $logged_in: Flags true when the current user is a logged-in member.
+ * - $is_admin: Flags true when the current user is an administrator.
+ *
+ * Field variables: for each field instance attached to the node a corresponding
+ * variable is defined; for example, $ticket->body becomes $body. When needing to
+ * access a field's raw values, developers/themers are strongly encouraged to
+ * use these variables. Otherwise they will have to explicitly specify the
+ * desired field language; for example, $ticket->body['en'], thus overriding any
+ * language negotiation rule that was previously applied.
  *
  * @see template_preprocess()
- * @see template_preprocess_comment()
+ * @see template_preprocess_ticket_comments()
  * @see template_process()
- * @see theme_comment()
  *
  * @ingroup themeable
  */

@@ -6,7 +6,7 @@
  * the entity types.
  */
 
-require_once 'includes/tickets.taxomomy.default.inc';
+
 /**
  * Implements hook_schema().
  */
@@ -132,17 +132,21 @@ function tickets_schema() {
 
 
 /**
- * Implements hook_intall()
+ * Implements hook_install()
  */
 function tickets_install() {
+  module_load_include('inc', 'tickets', 'includes/tickets.default');
+  module_load_include('inc', 'tickets', 'includes/tickets.fields');
   //Create two taxonomies 
-  tickets_vocabulary_add();
-  tickets_taxonomy_term_add();
+  tickets_create_vocabularies();
+  tickets_create_terms();
   
-  //Create field
-  tickets_add_body_field('ticket');
-  tickets_add_file_field('ticket');
-  tickets_add_entity_reference();
-  tickets_category_add_term_reference('ticket_category');
+  //Add field to ticket category bundle
+  tickets_create_field_ref_term('ticket_category', 'ticket_category');
   
+  //Add field to ticket bundle
+  tickets_create_field_file('ticket', 'ticket');
+  tickets_create_field_body('ticket', 'ticket');
+  tickets_create_field_ref_category('ticket', 'ticket');
+  tickets_create_field_ref_user('ticket', 'ticket');
 }

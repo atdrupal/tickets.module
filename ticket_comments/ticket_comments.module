@@ -79,7 +79,7 @@ function ticket_comments_theme() {
       'render element' => 'content',
     ),
     'ticket_comments' => array(
-        'render element' => 'elements',
+      'render element' => 'elements',
       'template' => 'ticket_comments',
     ),
   );
@@ -201,5 +201,5 @@ function template_preprocess_ticket_comments(&$variables) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
   $variables['classes_array'][] = 'comment';
-
+  kpr($variables);
 }

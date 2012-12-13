@@ -2,17 +2,8 @@
 
 define('TICKET_DEFAULT_VOCA_IMPORTANTCE', 'ticket_importance');
 define('TICKET_DEFAULT_VOCA_STATE', 'ticket_state');
-
-require_once dirname(__FILE__) . '/lib/Ticket.php';
-require_once dirname(__FILE__) . '/lib/TicketUIController.php';
-require_once dirname(__FILE__) . '/lib/TicketEntityMetaController.php';
-require_once dirname(__FILE__) . '/lib/TicketCategoryEntityMetaController.php';
-require_once dirname(__FILE__) . '/includes/tickets.fields.inc';
-require_once dirname(__FILE__) . '/lib/TicketCategory.php';
-require_once dirname(__FILE__) . '/lib/TicketCategoryUIController.php';
-require_once dirname(__FILE__) . '/lib/TicketCategoryInlineEntityForm.php';
-require_once dirname(__FILE__) . '/includes/tickets.inc';
-require_once dirname(__FILE__) . '/includes/tickets_category.inc';
+module_load_include('inc', 'tickets', 'includes/tickets');
+module_load_include('inc', 'tickets', 'includes/tickets_category');
 
 /**
  * Implements hook_entity_info().
@@ -62,8 +53,7 @@ function tickets_entity_info() {
       'locale' => TRUE,
       'entity_translation' => array(
         'bundle callback' => 'ticket_entity_translation_supported_type',
-//        'base path' => 'ticket/%ticket',
-        'base path' => 'admin/structure/tickets/manage/%ticket',
+        //'base path' => 'admin/structure/tickets/manage/%ticket',
         'default settings' => array(
           'default_language' => LANGUAGE_NONE,
         ),
@@ -154,18 +144,22 @@ function ticket_access_callback($op, $entity, $account, $entity_type) {
 
 /**
  * Label callback for machine entity.
+ * @param type $entity
+ * @param type $entity_type
+ * @return type
  */
 function ticket_label_callback($entity, $entity_type) {
-//  return ucwords($entity->type) . " #{$entity->ticket_id}";
   return ucwords($entity->title);
 }
 
 
 /**
  * Label callback for machine entity.
+ * @param type $entity
+ * @param type $entity_type
+ * @return type
  */
 function ticket_category_label_callback($entity, $entity_type) {
-//  return ucwords($entity->type) . " #{$entity->ticket_id}";
   return ucwords($entity->name);
 }
 
@@ -177,6 +171,9 @@ function tickets_permission() {
   return tickets_permission_info(array('Ticket','Ticket Category'));
 }
 
+/*
+ * Define permission informations
+ */
 function tickets_permission_info($names = array()) {
   $tasks = array('View', 'Edit', 'Delete');
   $options = array('own', 'any');
@@ -262,8 +259,15 @@ function tickets_page_view($ticket, $view_mode = 'full', $langcode = NULL) {
     $langcode = $GLOBALS['language_content']->language;
   }
   
-  $ticket->content = array();
+  // Allow modules to change the view mode.
+  $context = array(
+    'entity_type' => 'ticket',
+    'entity' => $ticket,
+    'langcode' => $langcode,
+  );
+  drupal_alter('entity_view_mode', $view_mode, $context);
   
+  $ticket->content['#ticket'] = $ticket;
   
   field_attach_prepare_view('ticket', array($ticket->ticket_id => $ticket), $view_mode, $langcode);
   entity_prepare_view('ticket', array($ticket->ticket_id => $ticket), $langcode);
@@ -273,9 +277,11 @@ function tickets_page_view($ticket, $view_mode = 'full', $langcode = NULL) {
   module_invoke_all('ticket_view', $ticket, $view_mode, $langcode);
   module_invoke_all('entity_view', $ticket, 'ticket', $view_mode, $langcode);
   
+  $ticket->content += array('#view_mode' => $view_mode);
   $build = $ticket->content;
   // We don't need duplicate rendering info in ticket->content.
-
+  unset($ticket->content);
+  
   $build += array(
     '#theme' => 'ticket',
     '#elements' => $ticket,
@@ -307,6 +313,7 @@ function tickets_views_api() {
 
 
 /**
+ * Extender inline entity form wiget
  * Implements hook_entity_info_alter().
  */
 function tickets_entity_info_alter(&$entity_info) {
@@ -317,11 +324,13 @@ function tickets_entity_info_alter(&$entity_info) {
   }
 }
 
-
+/**
+ * Implement hook_theme()
+ */
 function tickets_theme() {
   return array(
     'ticket' => array(
-      'variables' => array('elements' => null),
+      'render element' => 'elements',
       'template' => 'ticket',
     ),
   );
@@ -343,6 +352,28 @@ function tickets_theme() {
  */
 function template_preprocess_ticket(&$variables) {
 
+  $ticket = $variables['elements']['#ticket'];
+  $variables['ticket']    = $ticket;
+  
+  $variables['created']   = format_date($ticket->created);
+  $variables['changed']   = format_date($ticket->changed);
+  
+  $account = user_load($ticket->uid);
+  
+  $variables['author']    = theme('username', array('account' => $account));
+  $variables['picture']   = theme_get_setting('toggle_comment_user_picture') ? theme('user_picture', array('account' => $account)) : '';
+  $variables['signature'] = $account->signature;
+
+  $variables['submitted'] = t('Submitted by !username on !datetime', array('!username' => $variables['author'], '!datetime' => $variables['created']));
+
+  field_attach_preprocess('ticket', $ticket, $variables['elements'], $variables);
+
+  // Helpful $content variable for templates.
+  foreach (element_children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+  $variables['title']     = check_plain($ticket->title);
+  kpr($variables);
 }
 
 
@@ -368,20 +399,8 @@ function tickets_query_entityreference_alter(QueryAlterableInterface $query) {
   $query->condition('ur.rid', $role->rid);
 }
 
-/**
- * Implements hook_init()
- */
-function tickets_init() {
-  drupal_add_css(drupal_get_path('module', 'tickets') . '/css/tickets.css') ;
-}
 
-function tickets_admin_paths() {
-  $paths = array(
-    'ticket/*/add' => TRUE, 
-    'ticket/*/edit' => TRUE,
-  );
-  return $paths;
-}
+
 
 /**
  * Implements hook template_preprocess_views_view_table()
@@ -397,3 +416,178 @@ function tickets_preprocess_views_view_table(&$vars) {
 function tickets_form_alter($form, $form_state, $id) {
 //  kpr($id);
 }
+
+
+/**
+ * Implement hook_menu()
+ * @return string
+ */
+function tickets_menu() {
+  $items['ticket/%ticket'] = array(
+    'title callback' => 'tickets_page_title',
+    'title arguments' => array(1),
+    'page callback' => 'tickets_page_view',
+    'page arguments' => array(1),
+    'access arguments' => array(TRUE),
+  );
+  return $items;
+}
+
+
+/**
+ * Provide function access to ticket
+ */
+
+/**
+ * Fetch a ticket object.
+ *
+ * @param $ticket_id
+ *   Integer specifying the ticket id.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   A fully-loaded $ticket object or FALSE if it cannot be loaded.
+ *
+ * @see ticket_load_multiple()
+ */
+function ticket_load($ticket_id, $reset = FALSE) {
+  $tickets = ticket_load_multiple(array($ticket_id), array(), $reset);
+  return reset($tickets);
+}
+
+/**
+ * Load multiple tickets based on certain conditions.
+ *
+ * @param $ticket_ids
+ *   An array of ticket IDs.
+ * @param $conditions
+ *   An array of conditions to match against the {ticket} table.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   An array of ticket objects, indexed by pid.
+ *
+ * @see entity_load()
+ * @see ticket_load()
+ */
+function ticket_load_multiple($ticket_ids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('ticket', $ticket_ids, $conditions, $reset);
+}
+
+/**
+ * Deletes a ticket.
+ */
+function ticket_delete(TicketEntity $ticket) {
+  $ticket->delete();
+}
+
+/**
+ * Delete multiple tickets.
+ *
+ * @param $pids
+ *   An array of ticket IDs.
+ */
+function ticket_delete_multiple(array $ticket_ids) {
+  entity_get_controller('ticket')->delete($ticket_ids);
+}
+
+/**
+ * Create a new ticket object.
+ */
+function ticket_create(array $values) {
+  return new TicketEntity($values);
+}
+
+
+/**
+ * Saves a ticket to the database.
+ *
+ * @param $ticket
+ *   The ticket object.
+ */
+function ticket_save(TicketEntity $ticket) {
+  return $ticket->save();
+}
+
+
+
+
+
+
+/**
+ * Provide function access to ticket_category
+ */
+
+/**
+ * Fetch a ticket_category object.
+ *
+ * @param $ticket_category_id
+ *   Integer specifying the ticket_category id.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   A fully-loaded $ticket_category object or FALSE if it cannot be loaded.
+ *
+ * @see ticket_category_load_multiple()
+ */
+function ticket_category_load($ticket_category_id, $reset = FALSE) {
+  $ticket_categorys = ticket_category_load_multiple(array($ticket_category_id), array(), $reset);
+  return reset($ticket_categorys);
+}
+
+/**
+ * Load multiple ticket_categorys based on certain conditions.
+ *
+ * @param $ticket_cids
+ *   An array of ticket_category IDs.
+ * @param $conditions
+ *   An array of conditions to match against the {ticket_category} table.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   An array of ticket_category objects, indexed by pid.
+ *
+ * @see entity_load()
+ * @see ticket_category_load()
+ */
+function ticket_category_load_multiple($ticket_cids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('ticket_category', $ticket_cids, $conditions, $reset);
+}
+
+/**
+ * Deletes a ticket_category.
+ */
+function ticket_category_delete(TicketEntity $ticket_category) {
+  $ticket_category->delete();
+}
+
+/**
+ * Delete multiple ticket_categorys.
+ *
+ * @param $pids
+ *   An array of ticket_category IDs.
+ */
+function ticket_category_delete_multiple(array $ticket_cids) {
+  entity_get_controller('ticket_category')->delete($ticket_cids);
+}
+
+/**
+ * Create a new ticket_category object.
+ */
+function ticket_category_create(array $values) {
+  return new TicketEntity($values);
+}
+
+
+/**
+ * Saves a ticket_category to the database.
+ *
+ * @param $ticket_category
+ *   The ticket_category object.
+ */
+function ticket_category_save(TicketEntity $ticket_category) {
+  return $ticket_category->save();
+}
+
+
+

@@ -13,14 +13,13 @@ function ticket_service_services_resources() {
     $args = ticket_sevice_args_info($entity_id, $entity);
     $info += ticket_service_info($entity, $args);
   }
-    
   return $info;
   
 }
 
 
 /**
- * Get entity info
+ * Get entity type info
  */
 function ticket_service_info($entity_type, $args) {
   $operations = array('create', 'retrieve', 'update', 'delete', 'index');
@@ -188,7 +187,7 @@ function ticket_sevice_args_info($entity_id, $entity_type) {
   );
   
   foreach ($args as $op => $arg) {
-    $args[$op] += $type;
+    array_unshift($args[$op], $type);
   }
   
   return $args;
