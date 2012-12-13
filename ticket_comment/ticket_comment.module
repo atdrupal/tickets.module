@@ -1,0 +1,205 @@
+<?php
+
+require_once dirname(__FILE__) . '/controller/TicketCommentEntityMetaController.php';
+require_once dirname(__FILE__) . '/controller/TicketComment.php';
+require_once dirname(__FILE__) . '/controller/TicketCommentUIController.php';
+require_once dirname(__FILE__) . '/ticket_comment.admin.inc';
+require_once dirname(__FILE__) . '/ticket_comment.inc';
+
+/**
+ * Implements hook_entity_info().
+ */
+function ticket_comment_entity_info() {
+  
+  $info['ticket_comment'] = array(
+    'label' => 'Ticket comment',
+    'module' => 'ticket_comment',
+    'base table' => 'ticket_comment',
+    'fieldable' => TRUE,
+    'uri callback' => 'entity_class_uri',
+    'access callback' => 'ticket_comment_access_callback',
+    'label callback' => 'ticket_comment_label_callback',
+    'controller class' => 'EntityAPIController', // 'Lgentity_Entity_MachineController',
+    'entity class' => 'TicketComment',
+    'metadata controller class' => 'TicketCommentEntityMetaController',
+    'entity keys' => array('id' => 'ticket_mid', 'bundle' => 'type'),
+    'bundle keys' => array('bundle' => 'type'),
+    'bundles' => array(
+      'ticket_comment' => array(
+        'label' => 'Ticket Comments',
+        'admin' => array(
+          'path' => 'admin/structure/ticket-comments',
+          'access arguments' => array('administer ticket comments'),
+        ),
+      ),
+    ),
+    'admin ui' => array(
+      'path' => 'admin/structure/ticket-comments',
+      'file' => 'ticket_comment.admin.inc',
+      'controller class' => 'EntityDefaultUIController',
+    ),
+    'view modes' => array(
+      'full' => array(
+        'label' => t('Full content'),
+        'custom settings' => FALSE,
+      ),
+    ),
+  );
+  
+  return $info;
+}
+
+
+/**
+ * Access callback for machine entity.
+ */
+function ticket_comment_access_callback($op, $entity, $account, $entity_type) {
+  return user_access('administer ticket comment');
+}
+
+/**
+ * Label callback for machine entity.
+ */
+function ticket_comment_label_callback($entity, $entity_type) {
+  return ucwords($entity->name);
+}
+/**
+ * Implements hook_ticket_view()
+ */
+function ticket_comment_ticket_view($ticket, $view_mode, $langcode) {
+  if ($view_mode == 'full') {
+      $ticket->content['comments'] = ticket_comment_page_additions($ticket);
+  }
+}
+
+function ticket_comment_theme() {
+  return array(
+    'ticket_comment_wrapper' => array(
+      'template' => 'ticket-comments-wrapper',
+      'render element' => 'content',
+    ),
+    'ticket_comment' => array(
+      'render element' => 'elements',
+      'template' => 'ticket_comment',
+    ),
+  );
+}
+
+/**
+ * Build the comment-related elements for ticket detail pages.
+ *
+ * @param $ticket
+ *  A ticket object.
+ */
+function ticket_comment_page_additions($ticket) {
+  //Get comment form
+  $ticket_comment = ticket_comment_create(array('type' => 'ticket_comment'));
+  $build = drupal_get_form('ticket_comment_form', $ticket_comment, 'add', 'ticket_comment', $ticket);
+  $additions['comment_form'] = $build;
+  
+  //Get comments on ticket
+  $ticket_comments = ticket_comment_load_multiple(FALSE, array('ticket_id' => $ticket->ticket_id));
+  if (!empty($ticket_comments)) {
+    $build = ticket_comment_view_multiple($ticket_comments, $ticket);
+    $build['pager']['#theme'] = 'pager';
+    $additions['comments'] = $build;
+  }
+  
+  if ($additions) {
+    $additions += array(
+      '#theme' => 'ticket_comment_wrapper',
+      '#ticket' => $ticket,
+      'comments' => array(),
+      'comment_form' => array(),
+    );
+  }
+  return $additions;
+}
+
+function ticket_comment_view($ticket_comment, $ticket, $view_mode = 'full', $langcode = NULL) {   
+  if (!isset($langcode)) {
+    $langcode = $GLOBALS['language_content']->language;
+  }
+  // Allow modules to change the view mode.
+  $context = array(
+    'entity_type' => 'ticket_comment',
+    'entity' => $ticket_comment,
+    'langcode' => $langcode,
+  );
+  drupal_alter('entity_view_mode', $view_mode, $context);
+  
+  $ticket_comment->content['#ticket_comment'] = $ticket_comment;
+  
+  field_attach_prepare_view('ticket_comment', array($ticket_comment->ticket_mid => $ticket_comment), $view_mode, $langcode);
+  entity_prepare_view('ticket_comment', array($ticket_comment->ticket_mid => $ticket_comment), $langcode);
+  $ticket_comment->content += field_attach_view('ticket_comment', $ticket_comment, $view_mode, $langcode);
+
+  // Allow modules to make their own additions to the comment.
+  module_invoke_all('ticket_comment_view', $ticket_comment, $view_mode, $langcode);
+  module_invoke_all('entity_view', $ticket_comment, 'ticket_comment', $view_mode, $langcode);
+  $ticket_comment->content['#ticket'] = $ticket;
+  $ticket_comment->content += array('#view_mode' => $view_mode);
+  $build = $ticket_comment->content;
+  
+  unset($ticket_comment->content);
+  // We don't need duplicate rendering info in ticket_comment->content.
+
+  $build += array(
+    '#theme' => 'ticket_comment',
+    '#elements' => $ticket_comment,
+    '#view_mode' => $view_mode,
+    '#language' => $langcode,
+  );
+  return $build;
+}
+
+function ticket_comment_view_multiple($ticket_comments, $ticket, $view_mode = 'full', $weight = 0, $langcode = NULL) {
+  field_attach_prepare_view('ticket_comment', $ticket_comments, $view_mode, $langcode);
+  entity_prepare_view('ticket_comment', $ticket_comments, $langcode);
+
+  $build = array(
+    '#sorted' => TRUE,
+  );
+  foreach ($ticket_comments as $ticket_comment) {
+    $build[$ticket_comment->ticket_mid] = ticket_comment_view($ticket_comment, $ticket, $view_mode, $langcode);
+    $build[$ticket_comment->ticket_mid]['#weight'] = $weight;
+    $weight++;
+  }
+  return $build;
+}
+
+
+/**
+ * Implements hook_permission
+ */
+function ticket_comment_permission() {
+  
+}
+
+
+function template_preprocess_ticket_comment(&$variables) {
+  $ticket_comment = $variables['elements']['#ticket_comment'];
+  $ticket = $variables['elements']['#ticket'];
+  $variables['ticket_comment']   = $ticket_comment;
+  $variables['ticket']      = $ticket;
+  
+  
+  $variables['created']   = format_date($ticket_comment->created);
+  $variables['changed']   = format_date($ticket_comment->changed);
+
+  $account = user_load($ticket_comment->uid);
+  $variables['author']    = theme('username', array('account' => $account));
+  $variables['picture']   = theme_get_setting('toggle_comment_user_picture') ? theme('user_picture', array('account' => $account)) : '';
+  $variables['signature'] = $account->signature;
+
+  $variables['submitted'] = t('Submitted by !username on !datetime', array('!username' => $variables['author'], '!datetime' => $variables['created']));
+
+  field_attach_preprocess('ticket_comment', $ticket_comment, $variables['elements'], $variables);
+
+  // Helpful $content variable for templates.
+  foreach (element_children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+  $variables['classes_array'][] = 'comment';
+  kpr($variables);
+}
