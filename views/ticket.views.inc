@@ -4,7 +4,7 @@
  * Implements hook_views_data()
  */
 function ticket_views_data_alter(&$data) { 
-//  kpr($data['ticket']);exit;
+
   $data['ticket']['link_ticket'] = array(
     'field' => array(
       'title' => t('Link'),

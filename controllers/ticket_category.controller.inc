@@ -6,6 +6,7 @@ class TicketCategoryEntity extends Entity {
   public $uid;
   public $created;
   public $changed;
+  public $name;
 
   public function __construct(array $values = array(), $entityType = NULL) {
     parent::__construct($values, $entityType);

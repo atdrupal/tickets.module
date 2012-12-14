@@ -6,6 +6,7 @@ class TicketEntity extends Entity {
   public $uid;
   public $created;
   public $changed;
+  public $title;
 
   public function __construct(array $values = array(), $entityType = 'ticket') {
     parent::__construct($values, $entityType);
