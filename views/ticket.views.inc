@@ -167,7 +167,7 @@ function ticket_views_default_views() {
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
-  $handler->display->display_options['path'] = 'admin/structure/ticket';
+  $handler->display->display_options['path'] = 'admin/structure/tickets';
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page_1');

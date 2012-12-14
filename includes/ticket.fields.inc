@@ -92,7 +92,9 @@ function ticket_create_field_ref_category($entity_type, $bundle) {
     $field = array(
       'field_name' => 'ticket_entity_reference_category',
       'type' => 'entityreference',
-      'settings' => array('target_type' => 'ticket_category'),
+      'settings' => array('target_type' => 'ticket_category', 
+        'handler_settings'=> array('handler' => 'base', 'target_bundles' => array('ticket_category'))
+      ),
     );
     try {
       $field =  field_create_field($field);
@@ -108,8 +110,10 @@ function ticket_create_field_ref_category($entity_type, $bundle) {
     'type' => 'inline_entity_form',
     'module' => 'inline_entity_form',
     'settings' => array(
-      'allow_existing'  => 1,
-      'match_operator' => 'CONTAINS',
+      'type_settings' => array(
+        'allow_existing'  => 1,
+        'match_operator' => 'CONTAINS',
+      )
     )
   );
   ticket_create_instance($field, $entity_type, $bundle, 'Category', $widget);

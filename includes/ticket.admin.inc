@@ -37,7 +37,7 @@ function ticket_form($form, &$form_state, $entity, $op = 'edit', $entity_type) {
 function ticket_form_submit($form, &$form_state) {
   $entity = entity_ui_form_submit_build_entity($form, $form_state);
   $entity->save();
-  $form_state['redirect'] = "admin/structure/ticket";
+  $form_state['redirect'] = "admin/structure/tickets";
 }
 
 

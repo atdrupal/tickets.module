@@ -5,6 +5,7 @@ define('TICKET_DEFAULT_VOCA_STATE', 'ticket_state');
 module_load_include('inc', 'ticket', 'includes/ticket');
 module_load_include('inc', 'ticket', 'includes/ticket_category');
 module_load_include('inc', 'ticket', 'controllers/ticket.meta.controller');
+module_load_include('inc', 'ticket', 'controllers/ticket_category.meta.controller');
 
 /**
  * Implements hook_entity_info().
@@ -590,4 +591,38 @@ function ticket_category_save(TicketEntity $ticket_category) {
 }
 
 
+/**
+ * Implement hook_field_attach_presave($entity_type, $entity)
+ * 
+ * Callback when fields ticket_category_state and ticket_category_importance change value.
+ */
+function ticket_field_attach_presave($entity_type, $entity) {
+  switch ($entity_type) {
+    case 'ticket_category':
+      ticket_field_value_change($entity_type, $entity, 'ticket_category_state', 'ticket_state_change');
+      ticket_field_value_change($entity_type, $entity, 'ticket_category_importance', 'ticket_priority_change');
+      break;
+    case 'ticket':
+      ticket_field_value_change($entity_type, $entity, 'ticket_entity_reference_user', 'ticket_assigned_change');
+      break;
+  }
+  
+}
 
+/**
+ * Comparison value and hanle on field
+ * @param type $entity_type
+ * @param type $entity
+ * @param type $field_name
+ * @param type $hook_name
+ */
+function ticket_field_value_change($entity_type, $entity, $field_name, $hook_name) {
+  $info = entity_get_info($entity_type);
+  $entity_load = call_user_func($entity_type. '_load', $entity->{$info['entity keys']['id']});
+  $old_state = field_get_items($entity_type, $entity_load, $field_name);
+  $new_state = field_get_items($entity_type, $entity, $field_name);
+  if ($old_state != $new_state) {
+    // Let other modules act on field chage.
+    module_invoke_all($hook_name, $entity_type, $entity);
+  }
+}

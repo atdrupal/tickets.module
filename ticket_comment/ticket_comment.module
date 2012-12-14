@@ -1,8 +1,8 @@
 <?php
 
-require_once dirname(__FILE__) . '/controller/TicketCommentEntityMetaController.php';
-require_once dirname(__FILE__) . '/controller/TicketComment.php';
-require_once dirname(__FILE__) . '/controller/TicketCommentUIController.php';
+require_once dirname(__FILE__) . '/controller/ticket_comment.meta.controller.inc';
+require_once dirname(__FILE__) . '/controller/ticket_comment.inc';
+require_once dirname(__FILE__) . '/controller/ticket_comment.ui.controller.inc';
 require_once dirname(__FILE__) . '/ticket_comment.admin.inc';
 
 /**
