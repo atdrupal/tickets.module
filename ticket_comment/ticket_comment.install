@@ -68,6 +68,8 @@ function ticket_comment_schema() {
  */
 function ticket_comment_install() {
   module_load_include('inc', 'ticket', 'includes/ticket.fields');
+  ticket_create_field_ref_user('ticket_comment', 'ticket_comment');
   ticket_create_field_ref_term('ticket_comment', 'ticket_comment');
   ticket_create_field_body('ticket_comment', 'ticket_comment');
+  
 }
