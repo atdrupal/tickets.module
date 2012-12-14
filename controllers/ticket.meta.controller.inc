@@ -39,7 +39,7 @@ class TicketEntityMetaController extends EntityDefaultMetadataController {
 
     $properties['weight'] = array(
       'label' => t("Ticket weight"),
-      'type' => 'numeric',
+      'type' => 'integer',
       'description' => t("The ticket weight."),
       'setter callback' => 'entity_property_verbatim_set',
       'setter permission' => 'administer tickets',

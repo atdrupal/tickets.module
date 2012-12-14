@@ -387,9 +387,27 @@ function template_preprocess_ticket(&$variables) {
  * reference field.
  * We join the current query if the field name is 'field_foo', to the
  * 'field_bar' table and add a condition based on the joined table.
+ * http://api.drupal.org/api/drupal/includes%21database%21select.inc/class/SelectQuery/7
  */
 function ticket_query_entityreference_alter(QueryAlterableInterface $query) {
+ 
+  
+  $field  = $query->getMetaData('field');
+  $EntityFieldQuery = $query->getMetaData('entity_field_query');
+  if ($field['field_name'] == 'ticket_entity_reference_category') {
+     module_invoke_all('tickets_categories_for_ticket', $query);
+  }
+  if ($field['field_name'] == 'ticket_entity_reference_user') {
+     module_invoke_all('users_for_ticket', $query);
+  }
+  
+  
+}
 
+/**
+ * Implement hook_users_for_ticket(QueryAlterableInterface $query)
+ */
+function ticket_users_for_ticket(QueryAlterableInterface $query) {
   // Get the base table.
   $tables = $query->getTables();
   $base_table = key($tables);
@@ -399,9 +417,6 @@ function ticket_query_entityreference_alter(QueryAlterableInterface $query) {
   //Now get only administrator role.
   $query->condition('ur.rid', $role->rid);
 }
-
-
-
 
 /**
  * Implements hook template_preprocess_views_view_table()
@@ -415,7 +430,7 @@ function ticket_preprocess_views_view_table(&$vars) {
 }
 
 function ticket_form_alter($form, $form_state, $id) {
-//  kpr($id);
+  kpr($id);
 }
 
 

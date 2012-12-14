@@ -7,10 +7,13 @@ class TicketEntity extends Entity {
   public $created;
   public $changed;
   public $title;
+  public $language;
+  
 
   public function __construct(array $values = array(), $entityType = 'ticket') {
     parent::__construct($values, $entityType);
-
+    
+    $this->language = LANGUAGE_NONE;
     if (!$this->created) $this->created = REQUEST_TIME;
     if (!$this->changed) $this->changed = REQUEST_TIME;
     if (!$this->uid) $this->uid = user_is_anonymous() ? 0 : $GLOBALS['user']->uid;
