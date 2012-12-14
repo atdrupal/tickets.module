@@ -6,6 +6,9 @@ module_load_include('inc', 'ticket', 'includes/ticket');
 module_load_include('inc', 'ticket', 'includes/ticket_category');
 module_load_include('inc', 'ticket', 'controllers/ticket.meta.controller');
 module_load_include('inc', 'ticket', 'controllers/ticket_category.meta.controller');
+module_load_include('inc', 'ticket', 'controllers/ticket.ui.controller');
+module_load_include('inc', 'ticket', 'controllers/ticket_category.ui.controller');
+module_load_include('inc', 'ticket', 'controllers/ticket_category.inline_entity_form');
 
 /**
  * Implements hook_entity_info().
@@ -55,7 +58,7 @@ function ticket_entity_info() {
       'locale' => TRUE,
       'entity_translation' => array(
         'bundle callback' => 'ticket_entity_translation_supported_type',
-        //'base path' => 'admin/structure/ticket/manage/%ticket',
+        'base path' => 'admin/structure/tickets/manage/%ticket',
         'default settings' => array(
           'default_language' => LANGUAGE_NONE,
         ),
@@ -430,7 +433,7 @@ function ticket_preprocess_views_view_table(&$vars) {
 }
 
 function ticket_form_alter($form, $form_state, $id) {
-  kpr($id);
+//  kpr($id);
 }
 
 
@@ -632,12 +635,36 @@ function ticket_field_attach_presave($entity_type, $entity) {
  * @param type $hook_name
  */
 function ticket_field_value_change($entity_type, $entity, $field_name, $hook_name) {
+  
+  //For create new
+  $value = reset($entity->{$field_name});
+  if (isset($entity->is_new) && !empty($value)) {
+    module_invoke_all($hook_name, $entity_type, $entity);
+    return;
+  }
+  
+  //For update
   $info = entity_get_info($entity_type);
   $entity_load = call_user_func($entity_type. '_load', $entity->{$info['entity keys']['id']});
-  $old_state = field_get_items($entity_type, $entity_load, $field_name);
-  $new_state = field_get_items($entity_type, $entity, $field_name);
-  if ($old_state != $new_state) {
+  $new_value = reset($entity_load->{$field_name});
+  $new_value = empty($new_value) ? FALSE : $new_value;
+  $value = empty($value) ? FALSE : $value;
+  
+  if ($value !== $new_value) {
     // Let other modules act on field chage.
     module_invoke_all($hook_name, $entity_type, $entity);
   }
+}
+
+/**
+ * Implement hook_ticket_priority_change()
+ */
+function ticket_ticket_priority_change($entity_type, $entity) {
+  
+}
+/**
+ *Implement hook_ticket_assigned_change()
+ */
+function ticket_ticket_assigned_change($entity_type, $entity) {
+  
 }

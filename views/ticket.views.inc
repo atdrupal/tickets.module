@@ -41,7 +41,7 @@ function ticket_views_data_alter(&$data) {
 /**
  * Implements hook_views_default_views().
  */
-function ticket_views_default_views() {
+function ticket__views_default_views() {
   $views = array();
   $view = new view();
   $view->name = 'ticket';
