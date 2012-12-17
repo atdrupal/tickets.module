@@ -673,3 +673,8 @@ function ticket_ticket_priority_change($entity_type, $entity) {
 function ticket_ticket_assigned_change($entity_type, $entity) {
   
 }
+
+
+function hello_word() {
+    return 'hello';
+}

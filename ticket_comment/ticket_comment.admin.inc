@@ -3,7 +3,7 @@
  * @file lgentity.admin.inc
  */
 
-function ticket_comment_form($form, &$form_state, $entity, $op = 'edit', $entity_type = 'ticket_comment', $ticket) {
+function ticket_comment_form($form, &$form_state, $entity, $op = 'edit', $entity_type = 'ticket_comment', $ticket=null) {
   if (!$entity->type) $entity->type = $entity_type;
   
   $form_state['ticket_comment'] = $entity;

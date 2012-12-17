@@ -8,7 +8,7 @@
  * @param type $entity_type
  * @param type $bundle
  */
-function ticket_create_field_ref_term($entity_type, $bundle) {
+function ticket_create_field_ref_term($entity_type, $bundle, $locked = TRUE) {
   $field_infos = array(
     TICKET_DEFAULT_VOCA_IMPORTANTCE => array(
       'label' => 'Importance',
@@ -25,6 +25,7 @@ function ticket_create_field_ref_term($entity_type, $bundle) {
       $field = array(
         'field_name' => $field_info['field_name'],
         'type' => 'taxonomy_term_reference',
+        'locked' => $locked,
         'settings' => array('allowed_values' => array(array('vocabulary' => $vc_machine,'parent' => 0))),
       );
       try {
@@ -53,12 +54,13 @@ function ticket_create_field_ref_term($entity_type, $bundle) {
  * @param type $entity_type
  * @param type $bundle
  */
-function ticket_create_field_ref_user($entity_type, $bundle) {
+function ticket_create_field_ref_user($entity_type, $bundle, $locked = TRUE) {
   $field = field_info_field('ticket_entity_reference_user');
   if (empty($field)) {
     $field = array(
       'field_name' => 'ticket_entity_reference_user',
       'type' => 'entityreference',
+      'locked' => $locked,
       'settings' => array('target_type' => 'user'),
     );
     try {
@@ -86,12 +88,13 @@ function ticket_create_field_ref_user($entity_type, $bundle) {
  * @param type $entity_type
  * @param type $bundle
  */
-function ticket_create_field_ref_category($entity_type, $bundle) {
+function ticket_create_field_ref_category($entity_type, $bundle, $locked = TRUE) {
   $field = field_info_field('ticket_entity_reference_category');
   if (empty($field)) {
     $field = array(
       'field_name' => 'ticket_entity_reference_category',
       'type' => 'entityreference',
+      'locked' => $locked,
       'settings' => array('target_type' => 'ticket_category', 
         'handler_settings'=> array('handler' => 'base', 'target_bundles' => array('ticket_category'))
       ),
@@ -129,7 +132,7 @@ function ticket_create_field_ref_category($entity_type, $bundle) {
  * @param type $entity_type
  * @param type $bundle
  */
-function ticket_create_field_body($entity_type, $bundle) {
+function ticket_create_field_body($entity_type, $bundle, $locked = TRUE) {
   //body field in ticket
   $widget = array('type' => 'text_textarea_with_summary');
   $settings = array('display_summary' => TRUE);
@@ -141,6 +144,7 @@ function ticket_create_field_body($entity_type, $bundle) {
   if (empty($field)) {
     $field = array(
       'field_name' => 'ticket_body', 
+      'locked' => $locked,
       'type' => 'text_with_summary', 
     );
     try {
@@ -163,13 +167,14 @@ function ticket_create_field_body($entity_type, $bundle) {
  * @param type $entity_type
  * @param type $bundle
  */
-function ticket_create_field_file($entity_type, $bundle) {
+function ticket_create_field_file($entity_type, $bundle, $locked = TRUE) {
   //create field
   $field = field_info_field('ticket_file_upload');
   if (empty($field)) {
     $field = array(
       'field_name' => 'ticket_file_upload', 
       'type' => 'file', 
+      'locked' => $locked,
       'entity_types' => array($entity_type),
       'cardinality' => FIELD_CARDINALITY_UNLIMITED,
     );

@@ -49,7 +49,7 @@ function ticket_views_default_views() {
   $view->description = '';
   $view->tag = 'default';
   $view->base_table = 'ticket';
-  $view->human_name = 'Ticket Assigned';
+  $view->human_name = 'Ticket Assigned Overview';
   $view->core = 7;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
@@ -143,14 +143,16 @@ function ticket_views_default_views() {
   $handler->display->display_options['fields']['title']['table'] = 'ticket';
   $handler->display->display_options['fields']['title']['field'] = 'title';
   $handler->display->display_options['fields']['title']['exclude'] = TRUE;
-  /* Field: Ticket: Body */
+  /* Field: Field: Body */
   $handler->display->display_options['fields']['ticket_body']['id'] = 'ticket_body';
   $handler->display->display_options['fields']['ticket_body']['table'] = 'field_data_ticket_body';
   $handler->display->display_options['fields']['ticket_body']['field'] = 'ticket_body';
   $handler->display->display_options['fields']['ticket_body']['label'] = '';
   $handler->display->display_options['fields']['ticket_body']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['ticket_body']['alter']['max_length'] = '100';
+  $handler->display->display_options['fields']['ticket_body']['alter']['trim'] = TRUE;
   $handler->display->display_options['fields']['ticket_body']['element_label_colon'] = FALSE;
-  /* Field: Ticket: Assigned to */
+  /* Field: Field: Assigned to */
   $handler->display->display_options['fields']['ticket_entity_reference_user']['id'] = 'ticket_entity_reference_user';
   $handler->display->display_options['fields']['ticket_entity_reference_user']['table'] = 'field_data_ticket_entity_reference_user';
   $handler->display->display_options['fields']['ticket_entity_reference_user']['field'] = 'ticket_entity_reference_user';
@@ -170,10 +172,10 @@ function ticket_views_default_views() {
   $handler->display->display_options['fields']['nothing_1']['field'] = 'nothing';
   $handler->display->display_options['fields']['nothing_1']['label'] = '';
   $handler->display->display_options['fields']['nothing_1']['alter']['text'] = '<div class="ticket-content">
-  <h2 class="title">[title]</h2>
-  <div class="body">[ticket_body]</div>
-  <div class="assigned "><span>Assigned to:</span>[ticket_entity_reference_user] </div>
-  </div>';
+    <h2 class="title">[title]</h2>
+    <div class="body">[ticket_body]</div>
+    <div class="assigned "><span>Assigned to:</span>[ticket_entity_reference_user] </div>
+    </div>';
   $handler->display->display_options['fields']['nothing_1']['element_label_colon'] = FALSE;
   /* Field: Ticket: Delete Link */
   $handler->display->display_options['fields']['delete_ticket']['id'] = 'delete_ticket';
@@ -185,7 +187,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['fields']['edit_ticket']['table'] = 'ticket';
   $handler->display->display_options['fields']['edit_ticket']['field'] = 'edit_ticket';
   $handler->display->display_options['fields']['edit_ticket']['exclude'] = TRUE;
-  /* Field: Ticket category: Importance */
+  /* Field: Field: Importance */
   $handler->display->display_options['fields']['ticket_category_importance']['id'] = 'ticket_category_importance';
   $handler->display->display_options['fields']['ticket_category_importance']['table'] = 'field_data_ticket_category_importance';
   $handler->display->display_options['fields']['ticket_category_importance']['field'] = 'ticket_category_importance';
@@ -198,7 +200,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
   $handler->display->display_options['fields']['nothing']['label'] = '';
   $handler->display->display_options['fields']['nothing']['alter']['text'] = '<div class="delete-link">[delete_ticket]</div>
-  <div class="edit-link">[edit_ticket]</div>';
+    <div class="edit-link">[edit_ticket]</div>';
   $handler->display->display_options['fields']['nothing']['element_label_colon'] = FALSE;
   /* Field: Draggableviews: Ticket */
   $handler->display->display_options['fields']['draggableviews']['id'] = 'draggableviews';
@@ -209,7 +211,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['fields']['draggableviews']['element_default_classes'] = FALSE;
   $handler->display->display_options['fields']['draggableviews']['hide_alter_empty'] = FALSE;
   $handler->display->display_options['fields']['draggableviews']['draggableviews']['ajax'] = 0;
-  /* Sort criterion: Ticket category: Importance (ticket_category_importance) */
+  /* Sort criterion: Field: Importance (ticket_category_importance) */
   $handler->display->display_options['sorts']['ticket_category_importance_tid']['id'] = 'ticket_category_importance_tid';
   $handler->display->display_options['sorts']['ticket_category_importance_tid']['table'] = 'field_data_ticket_category_importance';
   $handler->display->display_options['sorts']['ticket_category_importance_tid']['field'] = 'ticket_category_importance_tid';
@@ -224,31 +226,167 @@ function ticket_views_default_views() {
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
-  $handler->display->display_options['path'] = 'ticket';
-  $translatables['ticket_assigned'] = array(
-    t('Master'),
-    t('Ticket Assigned'),
-    t('more'),
-    t('Apply'),
-    t('Reset'),
-    t('Sort by'),
-    t('Asc'),
-    t('Desc'),
-    t('Ticket category entity referenced from ticket_entity_reference_category'),
-    t('Title'),
-    t('Assigned to'),
-    t('<div class="ticket-content">
-  <h2 class="title">[title]</h2>
-  <div class="body">[ticket_body]</div>
-  <div class="assigned "><span>Assigned to:</span>[ticket_entity_reference_user] </div>
-  </div>'),
-    t('Delete Link'),
-    t('Edit Link'),
-    t('Importance'),
-    t('<div class="delete-link">[delete_ticket]</div>
-  <div class="edit-link">[edit_ticket]</div>'),
-    t('Page'),
+  $handler->display->display_options['path'] = 'admin/ticket';
+  $handler->display->display_options['menu']['type'] = 'normal';
+  $handler->display->display_options['menu']['title'] = 'Tickets';
+  $handler->display->display_options['menu']['weight'] = '0';
+  $handler->display->display_options['menu']['name'] = 'management';
+  $handler->display->display_options['menu']['context'] = 0;
+
+  /* Display: Page */
+  $handler = $view->new_display('page', 'Page', 'page_1');
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+  $handler->display->display_options['path'] = 'admin/ticket/all';
+  $handler->display->display_options['menu']['type'] = 'default tab';
+  $handler->display->display_options['menu']['title'] = 'All tickets';
+  $handler->display->display_options['menu']['weight'] = '0';
+  $handler->display->display_options['menu']['context'] = 0;
+  $handler->display->display_options['tab_options']['weight'] = '0';
+
+  /* Display: open */
+  $handler = $view->new_display('page', 'open', 'page_2');
+  $handler->display->display_options['defaults']['title'] = FALSE;
+  $handler->display->display_options['title'] = 'Tickets open';
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+  $handler->display->display_options['defaults']['filter_groups'] = FALSE;
+  $handler->display->display_options['defaults']['filters'] = FALSE;
+  /* Filter criterion: Field: State (ticket_category_state) */
+  $handler->display->display_options['filters']['ticket_category_state_tid']['id'] = 'ticket_category_state_tid';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['table'] = 'field_data_ticket_category_state';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['field'] = 'ticket_category_state_tid';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['relationship'] = 'ticket_entity_reference_category_target_id';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['value'] = array(
+    0 => '7',
   );
+  $handler->display->display_options['filters']['ticket_category_state_tid']['vocabulary'] = 'ticket_state';
+  $handler->display->display_options['path'] = 'admin/ticket/open';
+  $handler->display->display_options['menu']['type'] = 'tab';
+  $handler->display->display_options['menu']['title'] = 'opened';
+  $handler->display->display_options['menu']['description'] = 'Tickets open';
+  $handler->display->display_options['menu']['weight'] = '0';
+  $handler->display->display_options['menu']['name'] = 'management';
+  $handler->display->display_options['menu']['context'] = 0;
+
+  /* Display: being */
+  $handler = $view->new_display('page', 'being', 'page_3');
+  $handler->display->display_options['defaults']['title'] = FALSE;
+  $handler->display->display_options['title'] = 'The tickets being worked on';
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+  $handler->display->display_options['defaults']['filter_groups'] = FALSE;
+  $handler->display->display_options['defaults']['filters'] = FALSE;
+  /* Filter criterion: Field: State (ticket_category_state) */
+  $handler->display->display_options['filters']['ticket_category_state_tid']['id'] = 'ticket_category_state_tid';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['table'] = 'field_data_ticket_category_state';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['field'] = 'ticket_category_state_tid';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['relationship'] = 'ticket_entity_reference_category_target_id';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['value'] = array(
+    0 => '9',
+  );
+  $handler->display->display_options['filters']['ticket_category_state_tid']['vocabulary'] = 'ticket_state';
+  $handler->display->display_options['path'] = 'admin/ticket/being';
+  $handler->display->display_options['menu']['type'] = 'tab';
+  $handler->display->display_options['menu']['title'] = 'being';
+  $handler->display->display_options['menu']['description'] = 'The tickets being worked on';
+  $handler->display->display_options['menu']['weight'] = '0';
+  $handler->display->display_options['menu']['name'] = 'management';
+  $handler->display->display_options['menu']['context'] = 0;
+
+  /* Display: highest */
+  $handler = $view->new_display('page', 'highest', 'page_4');
+  $handler->display->display_options['defaults']['title'] = FALSE;
+  $handler->display->display_options['title'] = 'The tickets highest';
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+  $handler->display->display_options['defaults']['filter_groups'] = FALSE;
+  $handler->display->display_options['defaults']['filters'] = FALSE;
+  /* Filter criterion: Field: State (ticket_category_state) */
+  $handler->display->display_options['filters']['ticket_category_state_tid']['id'] = 'ticket_category_state_tid';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['table'] = 'field_data_ticket_category_state';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['field'] = 'ticket_category_state_tid';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['relationship'] = 'ticket_entity_reference_category_target_id';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['value'] = array(
+    0 => '6',
+  );
+  $handler->display->display_options['filters']['ticket_category_state_tid']['vocabulary'] = 'ticket_state';
+  $handler->display->display_options['path'] = 'admin/ticket/highest';
+  $handler->display->display_options['menu']['type'] = 'tab';
+  $handler->display->display_options['menu']['title'] = 'Highest';
+  $handler->display->display_options['menu']['description'] = 'The tickets highest';
+  $handler->display->display_options['menu']['weight'] = '0';
+  $handler->display->display_options['menu']['name'] = 'management';
+  $handler->display->display_options['menu']['context'] = 0;
+
+  /* Display: ready */
+  $handler = $view->new_display('page', 'ready', 'page_5');
+  $handler->display->display_options['defaults']['title'] = FALSE;
+  $handler->display->display_options['title'] = 'The tickets ready for QA';
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+  $handler->display->display_options['defaults']['filter_groups'] = FALSE;
+  $handler->display->display_options['defaults']['filters'] = FALSE;
+  /* Filter criterion: Field: State (ticket_category_state) */
+  $handler->display->display_options['filters']['ticket_category_state_tid']['id'] = 'ticket_category_state_tid';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['table'] = 'field_data_ticket_category_state';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['field'] = 'ticket_category_state_tid';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['relationship'] = 'ticket_entity_reference_category_target_id';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['value'] = array(
+    0 => '10',
+  );
+  $handler->display->display_options['filters']['ticket_category_state_tid']['vocabulary'] = 'ticket_state';
+  $handler->display->display_options['path'] = 'admin/ticket/ready';
+  $handler->display->display_options['menu']['type'] = 'tab';
+  $handler->display->display_options['menu']['title'] = 'ready';
+  $handler->display->display_options['menu']['description'] = 'The tickets ready for QA';
+  $handler->display->display_options['menu']['weight'] = '0';
+  $handler->display->display_options['menu']['name'] = 'management';
+  $handler->display->display_options['menu']['context'] = 0;
+
+  /* Display: waiting */
+  $handler = $view->new_display('page', 'waiting', 'page_6');
+  $handler->display->display_options['defaults']['title'] = FALSE;
+  $handler->display->display_options['title'] = 'The tickets waiting for information';
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+  $handler->display->display_options['defaults']['filter_groups'] = FALSE;
+  $handler->display->display_options['defaults']['filters'] = FALSE;
+  /* Filter criterion: Field: State (ticket_category_state) */
+  $handler->display->display_options['filters']['ticket_category_state_tid']['id'] = 'ticket_category_state_tid';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['table'] = 'field_data_ticket_category_state';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['field'] = 'ticket_category_state_tid';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['relationship'] = 'ticket_entity_reference_category_target_id';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['value'] = array(
+    0 => '8',
+  );
+  $handler->display->display_options['filters']['ticket_category_state_tid']['vocabulary'] = 'ticket_state';
+  $handler->display->display_options['path'] = 'admin/ticket/waiting';
+  $handler->display->display_options['menu']['type'] = 'tab';
+  $handler->display->display_options['menu']['title'] = 'waiting';
+  $handler->display->display_options['menu']['description'] = 'Waiting for information';
+  $handler->display->display_options['menu']['weight'] = '0';
+  $handler->display->display_options['menu']['name'] = 'management';
+  $handler->display->display_options['menu']['context'] = 0;
+
+  /* Display: closed */
+  $handler = $view->new_display('page', 'closed', 'page_7');
+  $handler->display->display_options['defaults']['title'] = FALSE;
+  $handler->display->display_options['title'] = 'The tickets closed';
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+  $handler->display->display_options['defaults']['filter_groups'] = FALSE;
+  $handler->display->display_options['defaults']['filters'] = FALSE;
+  /* Filter criterion: Field: State (ticket_category_state) */
+  $handler->display->display_options['filters']['ticket_category_state_tid']['id'] = 'ticket_category_state_tid';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['table'] = 'field_data_ticket_category_state';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['field'] = 'ticket_category_state_tid';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['relationship'] = 'ticket_entity_reference_category_target_id';
+  $handler->display->display_options['filters']['ticket_category_state_tid']['value'] = array(
+    0 => '11',
+  );
+  $handler->display->display_options['filters']['ticket_category_state_tid']['vocabulary'] = 'ticket_state';
+  $handler->display->display_options['path'] = 'admin/ticket/closed';
+  $handler->display->display_options['menu']['type'] = 'tab';
+  $handler->display->display_options['menu']['title'] = 'closed';
+  $handler->display->display_options['menu']['description'] = 'The tickets closed';
+  $handler->display->display_options['menu']['weight'] = '0';
+  $handler->display->display_options['menu']['name'] = 'management';
+  $handler->display->display_options['menu']['context'] = 0;
+
   $views[] = $view;
   return $views;
 }

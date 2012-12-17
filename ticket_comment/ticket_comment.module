@@ -35,7 +35,7 @@ function ticket_comment_entity_info() {
     'admin ui' => array(
       'path' => 'admin/structure/ticket-comments',
       'file' => 'ticket_comment.admin.inc',
-      'controller class' => 'EntityDefaultUIController',
+      'controller class' => 'TicketCommentEntityUIController',
     ),
     'view modes' => array(
       'full' => array(
@@ -60,7 +60,7 @@ function ticket_comment_access_callback($op, $entity, $account, $entity_type) {
  * Label callback for machine entity.
  */
 function ticket_comment_label_callback($entity, $entity_type) {
-  return ucwords($entity->name);
+  return ucwords($ticket->title . ' #' .date("D, d M Y", $entity->created));
 }
 /**
  * Implements hook_ticket_view()
@@ -172,7 +172,11 @@ function ticket_comment_view_multiple($ticket_comments, $ticket, $view_mode = 'f
  * Implements hook_permission
  */
 function ticket_comment_permission() {
-  
+  return array(
+    'administer ticket comments'  => array('title' => t('Administer ticket comments')),
+    'view comment'  => array('title' => t('View ticket comments')),
+    'post comment'  => array('title' => t('Delete ticket comments')),
+  );
 }
 
 
