@@ -420,10 +420,18 @@ function ticket_users_for_ticket(QueryAlterableInterface $query) {
   $tables = $query->getTables();
   $base_table = key($tables);
   $query->innerJoin('users_roles', 'ur', 'ur.uid = ' . $base_table . '.uid');
-  $role = user_role_load_by_name('administrator');
+  
+  //Get roles can be assigned to ticket
+  $roles = user_roles(FALSE, 'view tickets assigned');
+  $or = db_or();
+  foreach ($roles as $rid => $name) {
+    $or->condition('ur.rid', $rid);
+  }
+  
+  
   // Add conditions.
   //Now get only administrator role.
-  $query->condition('ur.rid', $role->rid);
+  $query->condition($or);
 }
 
 /**
@@ -643,11 +651,12 @@ function ticket_field_value_change($entity_type, $entity, $field_name, $hook_nam
   
   //For create new
   $value = reset($entity->{$field_name});
-  if (isset($entity->is_new) && !empty($value)) {
-    module_invoke_all($hook_name, $entity_type, $entity);
+  if (isset($entity->is_new)) {
+    if(!empty($value)) {
+      module_invoke_all($hook_name, $entity_type, $entity);
+    }
     return;
   }
-  
   //For update
   $info = entity_get_info($entity_type);
   $entity_load = call_user_func($entity_type. '_load', $entity->{$info['entity keys']['id']});

@@ -62,8 +62,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
-  $handler->display->display_options['pager']['type'] = 'some';
-  $handler->display->display_options['pager']['options']['items_per_page'] = '10';
+  $handler->display->display_options['pager']['type'] = 'none';
   $handler->display->display_options['style_plugin'] = 'table';
   $handler->display->display_options['style_options']['grouping'] = array(
     0 => array(
@@ -143,7 +142,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['fields']['title']['table'] = 'ticket';
   $handler->display->display_options['fields']['title']['field'] = 'title';
   $handler->display->display_options['fields']['title']['exclude'] = TRUE;
-  /* Field: Field: Body */
+  /* Field: Ticket: Body */
   $handler->display->display_options['fields']['ticket_body']['id'] = 'ticket_body';
   $handler->display->display_options['fields']['ticket_body']['table'] = 'field_data_ticket_body';
   $handler->display->display_options['fields']['ticket_body']['field'] = 'ticket_body';
@@ -152,7 +151,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['fields']['ticket_body']['alter']['max_length'] = '100';
   $handler->display->display_options['fields']['ticket_body']['alter']['trim'] = TRUE;
   $handler->display->display_options['fields']['ticket_body']['element_label_colon'] = FALSE;
-  /* Field: Field: Assigned to */
+  /* Field: Ticket: Assigned to */
   $handler->display->display_options['fields']['ticket_entity_reference_user']['id'] = 'ticket_entity_reference_user';
   $handler->display->display_options['fields']['ticket_entity_reference_user']['table'] = 'field_data_ticket_entity_reference_user';
   $handler->display->display_options['fields']['ticket_entity_reference_user']['field'] = 'ticket_entity_reference_user';
@@ -172,10 +171,10 @@ function ticket_views_default_views() {
   $handler->display->display_options['fields']['nothing_1']['field'] = 'nothing';
   $handler->display->display_options['fields']['nothing_1']['label'] = '';
   $handler->display->display_options['fields']['nothing_1']['alter']['text'] = '<div class="ticket-content">
-    <h2 class="title">[title]</h2>
-    <div class="body">[ticket_body]</div>
-    <div class="assigned "><span>Assigned to:</span>[ticket_entity_reference_user] </div>
-    </div>';
+      <h2 class="title">[title]</h2>
+      <div class="body">[ticket_body]</div>
+      <div class="assigned "><span>Assigned to:</span>[ticket_entity_reference_user] </div>
+      </div>';
   $handler->display->display_options['fields']['nothing_1']['element_label_colon'] = FALSE;
   /* Field: Ticket: Delete Link */
   $handler->display->display_options['fields']['delete_ticket']['id'] = 'delete_ticket';
@@ -187,7 +186,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['fields']['edit_ticket']['table'] = 'ticket';
   $handler->display->display_options['fields']['edit_ticket']['field'] = 'edit_ticket';
   $handler->display->display_options['fields']['edit_ticket']['exclude'] = TRUE;
-  /* Field: Field: Importance */
+  /* Field: Ticket category: Importance */
   $handler->display->display_options['fields']['ticket_category_importance']['id'] = 'ticket_category_importance';
   $handler->display->display_options['fields']['ticket_category_importance']['table'] = 'field_data_ticket_category_importance';
   $handler->display->display_options['fields']['ticket_category_importance']['field'] = 'ticket_category_importance';
@@ -200,7 +199,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
   $handler->display->display_options['fields']['nothing']['label'] = '';
   $handler->display->display_options['fields']['nothing']['alter']['text'] = '<div class="delete-link">[delete_ticket]</div>
-    <div class="edit-link">[edit_ticket]</div>';
+      <div class="edit-link">[edit_ticket]</div>';
   $handler->display->display_options['fields']['nothing']['element_label_colon'] = FALSE;
   /* Field: Draggableviews: Ticket */
   $handler->display->display_options['fields']['draggableviews']['id'] = 'draggableviews';
@@ -211,7 +210,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['fields']['draggableviews']['element_default_classes'] = FALSE;
   $handler->display->display_options['fields']['draggableviews']['hide_alter_empty'] = FALSE;
   $handler->display->display_options['fields']['draggableviews']['draggableviews']['ajax'] = 0;
-  /* Sort criterion: Field: Importance (ticket_category_importance) */
+  /* Sort criterion: Ticket category: Importance (ticket_category_importance) */
   $handler->display->display_options['sorts']['ticket_category_importance_tid']['id'] = 'ticket_category_importance_tid';
   $handler->display->display_options['sorts']['ticket_category_importance_tid']['table'] = 'field_data_ticket_category_importance';
   $handler->display->display_options['sorts']['ticket_category_importance_tid']['field'] = 'ticket_category_importance_tid';
@@ -226,6 +225,9 @@ function ticket_views_default_views() {
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+  $handler->display->display_options['defaults']['pager'] = FALSE;
+  $handler->display->display_options['pager']['type'] = 'none';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
   $handler->display->display_options['path'] = 'admin/ticket';
   $handler->display->display_options['menu']['type'] = 'normal';
   $handler->display->display_options['menu']['title'] = 'Tickets';
@@ -250,7 +252,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
   $handler->display->display_options['defaults']['filter_groups'] = FALSE;
   $handler->display->display_options['defaults']['filters'] = FALSE;
-  /* Filter criterion: Field: State (ticket_category_state) */
+  /* Filter criterion: Ticket category: State (ticket_category_state) */
   $handler->display->display_options['filters']['ticket_category_state_tid']['id'] = 'ticket_category_state_tid';
   $handler->display->display_options['filters']['ticket_category_state_tid']['table'] = 'field_data_ticket_category_state';
   $handler->display->display_options['filters']['ticket_category_state_tid']['field'] = 'ticket_category_state_tid';
@@ -274,7 +276,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
   $handler->display->display_options['defaults']['filter_groups'] = FALSE;
   $handler->display->display_options['defaults']['filters'] = FALSE;
-  /* Filter criterion: Field: State (ticket_category_state) */
+  /* Filter criterion: Ticket category: State (ticket_category_state) */
   $handler->display->display_options['filters']['ticket_category_state_tid']['id'] = 'ticket_category_state_tid';
   $handler->display->display_options['filters']['ticket_category_state_tid']['table'] = 'field_data_ticket_category_state';
   $handler->display->display_options['filters']['ticket_category_state_tid']['field'] = 'ticket_category_state_tid';
@@ -298,7 +300,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
   $handler->display->display_options['defaults']['filter_groups'] = FALSE;
   $handler->display->display_options['defaults']['filters'] = FALSE;
-  /* Filter criterion: Field: State (ticket_category_state) */
+  /* Filter criterion: Ticket category: State (ticket_category_state) */
   $handler->display->display_options['filters']['ticket_category_state_tid']['id'] = 'ticket_category_state_tid';
   $handler->display->display_options['filters']['ticket_category_state_tid']['table'] = 'field_data_ticket_category_state';
   $handler->display->display_options['filters']['ticket_category_state_tid']['field'] = 'ticket_category_state_tid';
@@ -322,7 +324,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
   $handler->display->display_options['defaults']['filter_groups'] = FALSE;
   $handler->display->display_options['defaults']['filters'] = FALSE;
-  /* Filter criterion: Field: State (ticket_category_state) */
+  /* Filter criterion: Ticket category: State (ticket_category_state) */
   $handler->display->display_options['filters']['ticket_category_state_tid']['id'] = 'ticket_category_state_tid';
   $handler->display->display_options['filters']['ticket_category_state_tid']['table'] = 'field_data_ticket_category_state';
   $handler->display->display_options['filters']['ticket_category_state_tid']['field'] = 'ticket_category_state_tid';
@@ -346,7 +348,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
   $handler->display->display_options['defaults']['filter_groups'] = FALSE;
   $handler->display->display_options['defaults']['filters'] = FALSE;
-  /* Filter criterion: Field: State (ticket_category_state) */
+  /* Filter criterion: Ticket category: State (ticket_category_state) */
   $handler->display->display_options['filters']['ticket_category_state_tid']['id'] = 'ticket_category_state_tid';
   $handler->display->display_options['filters']['ticket_category_state_tid']['table'] = 'field_data_ticket_category_state';
   $handler->display->display_options['filters']['ticket_category_state_tid']['field'] = 'ticket_category_state_tid';
@@ -370,7 +372,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
   $handler->display->display_options['defaults']['filter_groups'] = FALSE;
   $handler->display->display_options['defaults']['filters'] = FALSE;
-  /* Filter criterion: Field: State (ticket_category_state) */
+  /* Filter criterion: Ticket category: State (ticket_category_state) */
   $handler->display->display_options['filters']['ticket_category_state_tid']['id'] = 'ticket_category_state_tid';
   $handler->display->display_options['filters']['ticket_category_state_tid']['table'] = 'field_data_ticket_category_state';
   $handler->display->display_options['filters']['ticket_category_state_tid']['field'] = 'ticket_category_state_tid';
@@ -386,6 +388,7 @@ function ticket_views_default_views() {
   $handler->display->display_options['menu']['weight'] = '0';
   $handler->display->display_options['menu']['name'] = 'management';
   $handler->display->display_options['menu']['context'] = 0;
+
 
   $views[] = $view;
   return $views;
