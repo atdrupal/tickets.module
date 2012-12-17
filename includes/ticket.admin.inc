@@ -15,12 +15,7 @@ function ticket_form($form, &$form_state, $entity, $op = 'edit', $entity_type) {
     '#required' => TRUE,
     '#weight' => -5,
   );
-//  $langcode = entity_language($entity_type, $entity);
-//  // Simply use default language
-//  $form['language'] = array(
-//    '#type' => 'value',
-//    '#value' => $langcode,
-//  );
+  $langcode = entity_language($entity_type, $entity);
   field_attach_form($entity_type, $entity, $form, $form_state, $langcode);
 
   $form['actions']['#weight'] = 100;

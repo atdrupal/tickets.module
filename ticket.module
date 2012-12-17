@@ -193,7 +193,12 @@ function ticket_permission_info($names = array()) {
       }
     }
   }
-  
+  // Additional permissions
+  $permission['view tickets assigned'] = array('title' => 'View Tickets Assigned to User');
+  $permission['edit tickets assigned'] = array('title' => 'Edit Tickets Assigned to User');
+  $permission['reassign tickets assigned'] = array('title' => 'Reassign Tickets Assigned to User');
+  $permission['change importance of tickets'] = array('title' => 'Change Importance of Tickets Assigned To User');
+  $permission['change state of tickets'] = array('title' => 'Change State of Tickets Assigned To User');
   return $permission; 
 }
 
