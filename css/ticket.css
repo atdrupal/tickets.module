@@ -114,17 +114,17 @@ div.assigned span {
 
 
 /**Ticket comments css **/
-form#ticket-comments-form div.field-name-ticket-category-importance ,
-form#ticket-comments-form div.field-name-ticket-entity-reference-user,
-form#ticket-comments-form div.field-name-ticket-category-state {
+form#ticket-comment-form div.field-name-ticket-category-importance ,
+form#ticket-comment-form div.field-name-ticket-entity-reference-user,
+form#ticket-comment-form div.field-name-ticket-category-state {
   float: left;
   width: auto;
 }
-form#ticket-comments-form div.field-name-ticket-comments-body {
+form#ticket-comment-form div.field-name-ticket-body {
   float: left;
   width: 100%;
 }
-form#ticket-comments-form div.submit {
+form#ticket-comment-form div.submit {
   float: left;
   
 }
