@@ -308,7 +308,7 @@ function ticket_page_view($ticket, $view_mode = 'full', $langcode = NULL) {
  * Menu title callback for showing individual entities
  */
 function ticket_page_title(TicketEntity $ticket){
-  return $ticket->name;
+  return $ticket->title;
 }
 
 /**
