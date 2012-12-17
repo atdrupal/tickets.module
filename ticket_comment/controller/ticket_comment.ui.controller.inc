@@ -10,7 +10,7 @@ class TicketCommentEntityUIController extends EntityDefaultUIController {
   }
 
   public function overviewTable($conditions = array()) {
-    $conditions['type'] = 'ticket_comments';
+    $conditions['type'] = 'ticket_comment';
     return parent::overviewTable($conditions);
   }
 }
