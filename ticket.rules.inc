@@ -1,6 +1,40 @@
 <?php
 
 /**
+ * Implement hook_rules_event_info()
+ */
+function ticket_rules_event_info() {
+  $variables = array(
+    'entity_type' => array(
+      'type' => 'text',
+      'label' => t('The ticket type.'),
+    ),
+    'entity' => array(
+      'type' => 'ticket_category',
+      'label' => t('The ticket entity.'),
+    ),
+  );
+  $items = array(
+    'state_change' => array(
+      'label' => t('The state change'), 
+      'group' => t('Ticket'), 
+      'variables' => $variables
+    ), 
+    'importance_change' => array(
+      'label' => t('The importance change'), 
+      'group' => t('Ticket'), 
+      'variables' => $variables
+    ), 
+    'assign_change' => array(
+      'label' => t('The assign change'), 
+      'group' => t('Ticket'), 
+      'variables' => $variables
+    ), 
+  );
+  //return $items;
+}
+
+/**
  * Implements hook_rules_action_info().
  */
 function ticket_rules_action_info() {
