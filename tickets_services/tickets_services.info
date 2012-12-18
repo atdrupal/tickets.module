@@ -8,5 +8,6 @@ dependencies[] = ticket
 dependencies[] = ticket_comment
 dependencies[] = services
 dependencies[] = rest_server
+dependencies[] = services_entity
 
 
