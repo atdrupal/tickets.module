@@ -1,0 +1,81 @@
+<?php
+
+/**
+ * Implementation of hook_default_services_endpoint().
+ */
+function tickets_services_default_services_endpoint() {
+  
+  $endpoint = new stdClass();
+  $endpoint->disabled = FALSE; /* Edit this to true to make a default endpoint disabled initially */
+  $endpoint->api_version = 3;
+  $endpoint->name = 'service_entity_tickets';
+  $endpoint->server = 'rest_server';
+  $endpoint->path = 'tickets/services';
+  $endpoint->authentication = array();
+  $endpoint->server_settings = array();
+  $endpoint->resources = array(
+    'entity_ticket' => array(
+      'operations' => array(
+        'create' => array(
+          'enabled' => '1',
+        ),
+        'retrieve' => array(
+          'enabled' => '1',
+        ),
+        'update' => array(
+          'enabled' => '1',
+        ),
+        'delete' => array(
+          'enabled' => '1',
+        ),
+        'index' => array(
+          'enabled' => '1',
+        ),
+      ),
+    ),
+    'entity_ticket_category' => array(
+      'operations' => array(
+        'create' => array(
+          'enabled' => '1',
+        ),
+        'retrieve' => array(
+          'enabled' => '1',
+        ),
+        'update' => array(
+          'enabled' => '1',
+        ),
+        'delete' => array(
+          'enabled' => '1',
+        ),
+        'index' => array(
+          'enabled' => '1',
+        ),
+      ),
+    ),
+    'entity_ticket_comment' => array(
+      'operations' => array(
+        'create' => array(
+          'enabled' => '1',
+        ),
+        'retrieve' => array(
+          'enabled' => '1',
+        ),
+        'update' => array(
+          'enabled' => '1',
+        ),
+        'delete' => array(
+          'enabled' => '1',
+        ),
+        'index' => array(
+          'enabled' => '1',
+        ),
+      ),
+    ),
+  );
+  $endpoint->debug = 0;
+
+  
+  $endpoints[] = $endpoint;
+  
+  return $endpoints;
+}

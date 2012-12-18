@@ -2,7 +2,7 @@ name = Tickets
 description = Manager system ticket
 core = 7.x
 package = "Viet Coop"
-
+version = 7.x-1.0-dev
 
 ;files[] = includes/ticket.default.inc
 files[] = includes/ticket.admin.inc
